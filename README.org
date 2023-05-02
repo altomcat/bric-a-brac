@@ -8,7 +8,7 @@ Update your /~.config/guix/channels.scm/ according to this sample configuration:
 (cons* (channel
 	(name 'my-guix-packages)
 	(url "https://github.com/altomcat/my-guix-pkgs.git")
-	(commit "9105642f107563e60b023872e3c0a513c0046246")
+	(commit "71d1ed6147dd9299de4a25eafde3057ec51d8e6c")
 	(branch "master"))
        ;; (channel
        ;; 	(name 'nonguix)
@@ -25,4 +25,13 @@ Update your /~.config/guix/channels.scm/ according to this sample configuration:
 
 #+end_src
 
+Don't forget to run a /guix pull/ to take into account the new channel!
 
+#+begin_src shell
+
+guix pull
+
+# Install font-iosevka-comfy
+guix install font-iosevka-comfy
+
+#+end_src
