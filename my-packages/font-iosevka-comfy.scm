@@ -8,7 +8,7 @@
 (define-public font-iosevka-comfy
   (package
    (name "font-iosevka-comfy")
-   (version "1.1.1")
+   (version "1.2.0")
    (source (origin
             (method git-fetch)
             (uri (git-reference
