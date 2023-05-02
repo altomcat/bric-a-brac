@@ -1,2 +1,2 @@
-# my-guix-pkgs
-my channel of Guix packages [testing]
+# my-guix-packages
+my public channel of Guix packages (for testing)
