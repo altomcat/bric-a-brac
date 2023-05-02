@@ -1,7 +1,7 @@
 # my-guix-packages
 You can find here my public channel of Guix packages for testing (use it at your own risk)
 
-Update your /~.config/guix/channel.scm/ according to this sample configuration:
+Update your /~.config/guix/channels.scm/ according to this sample configuration:
 
 #+begin_src scheme
 
