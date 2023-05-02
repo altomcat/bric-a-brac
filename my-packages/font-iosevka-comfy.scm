@@ -16,7 +16,7 @@
 		  (commit (string-append "" version))))
 	    (file-name (git-file-name name version))
 	    (sha256
-	     (base32 "0qzqz0b4k0bm93l6k8bfbqmy04cfy8vbbv4xwf9iyrb305siwjjy"))))
+	     (base32 "1gccv28avxlkicl6rcsn6i23pdn0nrk91zhcyzwwc3nyzm2w8w40"))))
    (build-system font-build-system)
    (home-page "https://github.com/protesilaos/iosevka-comfy")
    (synopsis "A TTF font derived from Iosevka")
