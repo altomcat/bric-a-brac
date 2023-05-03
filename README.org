@@ -1,7 +1,7 @@
 # my-guix-packages
 You can find here my public channel of Guix packages for testing (use it at your own risk)
 
-Update your /~.config/guix/channels.scm/ according to this sample configuration:
+Update your =~/.config/guix/channels.scm= according to this sample configuration:
 
 #+begin_src scheme
 
@@ -10,17 +10,7 @@ Update your /~.config/guix/channels.scm/ according to this sample configuration:
 	(url "https://github.com/altomcat/my-guix-pkgs.git")
 	(commit "71d1ed6147dd9299de4a25eafde3057ec51d8e6c")
 	(branch "master"))
-       ;; (channel
-       ;; 	(name 'nonguix)
-       ;; 	(url "https://gitlab.com/nonguix/nonguix")
-       ;; 	(introduction
-       ;; 	 (make-channel-introduction
-       ;; 	  "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-       ;; 	  (openpgp-fingerprint
-       ;; 	   "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
-       (channel
-        (name 'guix)
-        (url "https://git.savannah.gnu.org/git/guix.git"))
+        ;; (channel ...)   ;  other external channels
        %default-channels)
 
 #+end_src
@@ -35,3 +25,5 @@ guix pull
 guix install font-iosevka-comfy
 
 #+end_src
+
+
