@@ -1,8 +1,11 @@
 (define-module (my-packages emacs-substitute)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system emacs)
-  #:use-module ((guix licenses) #:prefix license:))
+  #:use-module (gnu packages)
+  #:use-module (gnu packages emacs)
+  )
 
 (define-public emacs-substitute
   (package
@@ -29,5 +32,3 @@
        text and perform the substitution outright.")
     
     (license license:gpl1+)))
-
-emacs-substitute
