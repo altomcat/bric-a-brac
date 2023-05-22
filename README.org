@@ -1,5 +1,5 @@
 # my-guix-packages
-You can find here my public channel of Guix packages for testing (use it at your own risk)
+You can find here my public channel of Guix packages for testing.
 
 Update your =~/.config/guix/channels.scm= according to this sample configuration:
 
@@ -8,8 +8,12 @@ Update your =~/.config/guix/channels.scm= according to this sample configuration
 (cons* (channel
 	(name 'my-guix-packages)
 	(url "https://github.com/altomcat/my-guix-pkgs.git")
-	(commit "71d1ed6147dd9299de4a25eafde3057ec51d8e6c")
-	(branch "master"))
+        (introduction
+	 (make-channel-introduction
+	  "cb7dbb3911da911e06146d4a7bde372c4b5a4783"
+	  (openpgp-fingerprint
+	   "AA52 B3F3 E764 5F95 6BA1 23E2 43D7 A3F7 7931 A85D")))
+	)
         ;; (channel ...)   ;  other external channels
        %default-channels)
 
@@ -22,8 +26,8 @@ Don't forget to run a /guix pull/ to take into account the new channel!
 guix pull
 
 # Install font-iosevka-comfy
-guix install font-iosevka-comfy
+guix install emacs-substitute
 
 #+end_src
 
-
+/Note : ~font-iosevka-comfy~ has been merged to guix master branch./
