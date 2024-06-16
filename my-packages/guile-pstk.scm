@@ -1,4 +1,4 @@
-(define-module (my-packages guile-ptsk)
+(define-module (my-packages guile-pstk)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
@@ -8,9 +8,9 @@
   #:use-module (gnu packages tcl)
   )
 
-(define-public guile-ptsk
+(define-public guile-pstk
   (package
-   (name "guile-ptsk")
+   (name "guile-pstk")
    (version "0.0.0")
    (source (origin
 	    (method git-fetch)
@@ -34,4 +34,5 @@
     "PS/TK version (http://mirror.informatimago.com/scheme/www.t3x.org/pstk/index.html) fixed to work fine on modern GNU Guile")
    (license license:bsd-3)))
 
-;;guile-ptsk
+;; Uncommnent to install with `guix package -f guile-pstk.scm'
+;;guile-pstk
