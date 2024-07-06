@@ -1,4 +1,4 @@
-(define-module (my-packages emacs-substitute)
+(define-module (packages emacs-substitute)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)

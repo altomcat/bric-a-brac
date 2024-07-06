@@ -1,4 +1,4 @@
-(define-module (my-packages font-iosevka-comfy)
+(define-module (packages font-iosevka-comfy)
   #:use-module (guix packages)
   #:use-module (gnu packages fonts)
   #:use-module (guix git-download)
