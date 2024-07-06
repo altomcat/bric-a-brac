@@ -1,4 +1,4 @@
-(define-module (my-packages guile-pstk)
+(define-module (packages guile-pstk)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
