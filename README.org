@@ -6,8 +6,8 @@ Update your =~/.config/guix/channels.scm= according to this sample configuration
 #+begin_src scheme
 
 (cons* (channel
-	(name 'my-guix-packages)
-	(url "https://github.com/altomcat/my-guix-pkgs.git")
+	(name 'bric-a-brac)
+	(url "https://github.com/altomcat/bric-a-brac.git")
         (introduction
 	 (make-channel-introduction
 	  "cb7dbb3911da911e06146d4a7bde372c4b5a4783"
@@ -25,9 +25,9 @@ Don't forget to run a /guix pull/ to take into account the new channel!
 
 guix pull
 
-# Install font-iosevka-comfy
-guix install emacs-substitute
+# Install guile-pstk library
+guix install guile-pstk
 
 #+end_src
 
-/Note : ~font-iosevka-comfy~ has been merged to guix master branch./
+/Note : ~font-iosevka-comfy~  and ~emacs-substitute~ has been merged to guix master branch./
