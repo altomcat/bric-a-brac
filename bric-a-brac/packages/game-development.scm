@@ -25,6 +25,8 @@
 
 ;;; Commentary:
 ;;; My attempt to create a guix definition package for `raylib-guile'
+;;; On segmentation fault due to a conflict from several GLFW libraries installed on your system,
+;;; try to run it with `guix shell guile raylib-guile --pure'
 
 
 (define-module (bric-a-brac packages game-development)
