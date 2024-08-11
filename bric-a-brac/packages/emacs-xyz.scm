@@ -1,3 +1,30 @@
+;;; emacs-xyz.scm --  -*- lexical-binding: t -*-
+
+;; Copyright (C) 2024 Free Software Foundation, Inc.
+
+;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
+;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
+;; Created: 2024/08/11
+;; Version: 0.0.1
+
+;; This file is part of GNU Emacs.
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+;;; A bunch of new or updated packages related to emacs.
+
 (define-module (bric-a-brac packages emacs-xyz)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -38,7 +65,6 @@
 
     (license license:gpl1+)))
 
-emacs-substitute
 
 (define-public emacs-org-appear-0.3.1
   (package
@@ -56,4 +82,7 @@ emacs-substitute
         (base32 "1hfhnzhmbxrw4kz977s48x4nbq86vda5dvj00s2ima2i22b8l2z4"))))
     ))
 
-emacs-org-appear-0.3.1
+
+;; Uncommnent to install with `guix package -f emacs-substitute.scm'
+;; emacs-substitute
+;; emacs-org-appear-0.3.1
