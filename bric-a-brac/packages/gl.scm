@@ -49,20 +49,20 @@
 	(revision "0")
         (commit "7b6aead9fb88b3623e3b3725ebb42670cbe4c579"))
     (package
-      (inherit glfw)
-      (name "glfw")
-      (version (git-version version revision commit))
-      (source (origin
-		;; The main goal here is to allow for '--with-branch'.
-		(method git-fetch)
-		(uri (git-reference
-		      (url "https://github.com/glfw/glfw.git")
-		      (commit commit)))
-		(file-name (git-file-name name version))
-		(sha256
-		 (base32
-                  "1izxbb55hzi0b6jnfi11nvfsd3l85xzvb66jsb0ipkfxs95mdiqy"))))
-      (native-inputs (list doxygen-new unzip pkg-config))
-      )))
+     (inherit glfw)
+     (name "glfw")
+     (version (git-version version revision commit))
+     (source (origin
+	      ;; The main goal here is to allow for '--with-branch'.
+	      (method git-fetch)
+	      (uri (git-reference
+		    (url "https://github.com/glfw/glfw.git")
+		    (commit commit)))
+	      (file-name (git-file-name name version))
+	      (sha256
+	       (base32
+                "1izxbb55hzi0b6jnfi11nvfsd3l85xzvb66jsb0ipkfxs95mdiqy"))))
+     (native-inputs (list doxygen-new unzip pkg-config))
+     )))
 
 ;; glfw-new
