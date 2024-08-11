@@ -1,10 +1,13 @@
-(define-module (packages emacs-substitute)
+(define-module (bric-a-brac packages emacs-xyz)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system emacs)
   #:use-module (gnu packages)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-xyz)
+  #:export (emacs-substitute)
+  #:export (emacs-org-appear-0.3.1)
   )
 
 (define-public emacs-substitute
@@ -34,3 +37,23 @@
        prompt for substitute text and perform the substitution outright.")
 
     (license license:gpl1+)))
+
+emacs-substitute
+
+(define-public emacs-org-appear-0.3.1
+  (package
+    (inherit emacs-org-appear)
+    (name "emacs-org-appear")
+    (version "0.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/awth13/org-appear")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hfhnzhmbxrw4kz977s48x4nbq86vda5dvj00s2ima2i22b8l2z4"))))
+    ))
+
+emacs-org-appear-0.3.1
