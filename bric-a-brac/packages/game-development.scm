@@ -31,10 +31,10 @@
 ;;; WARNING: GLFW: Failed to initialize GLFW
 ;;;
 ;;; That means GLFW fails to initialize under wayland because wayland libraries cannot be found.
-;;; To fix this issue until I find a better solution, I have temporaritly set LD_LIBRARY_PATH
-;;; to point to wayland libraries.
+;;; Until I find a better solution, you  have to set LD_LIBRARY_PATH to point to wayland libraries.
 
-
+;;; A temporarily fix is to run guile-raylib with wayland support with:
+;;;   export LD_LIBRARY_PATH="$LIBRARY_PATH"; guix shell guile guile-raylib
 
 (define-module (bric-a-brac packages game-development)
   #:use-module ((guix licenses) #:prefix license:)
@@ -51,7 +51,6 @@
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages freedesktop)
   #:export (raylib-with-extras)
   #:export (guile-raylib))
 
@@ -118,7 +117,6 @@
     (native-inputs (list pkg-config))
     (inputs (list guile-3.0
 		  guile-lib
-		  wayland
 		  ))
     (propagated-inputs (list raylib-with-extras))
     (outputs '("out" "examples"))
@@ -184,11 +182,8 @@
 	       (install-file go (string-append lib-out "/site-ccache"))
 	       (install-file lib (string-append lib-out "/extensions"))
 	       (copy-recursively "examples" examples)
-	       (setenv "LD_LIBRARY_PATH" (let ((input (assoc-ref inputs "wayland")))
-					   (string-append input "/lib")))
 	       #t)))
 	 )))
-
 
     (home-page "https://github.com/petelliott/raylib-guile.git")
     (synopsis "Guile bindings for raylib library.")
