@@ -5,7 +5,7 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2024/08/10
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Keywords: guile raylib
 
 ;; This file is part of GNU Emacs.
@@ -26,16 +26,13 @@
 ;;; Commentary:
 ;;; My attempt to create a guix definition package for `guile-raylib'.
 ;;;
-;;; As a wayland user, if may encounter the following error:
+;;; As a wayland user, if you may encounter the following error:
 ;;; WARNING: GLFW: Error: 65544 Description: Wayland: Failed to load libwayland-client
 ;;; WARNING: GLFW: Failed to initialize GLFW
 ;;;
 ;;; That means GLFW fails to initialize under wayland because wayland libraries cannot be found.
-;;;
-;;; A temporarily fix is to run guile-raylib with wayland support with:
-;;;   export LD_LIBRARY_PATH="$LIBRARY_PATH"; guix shell guile guile-raylib
-;;; Or revert to GLFW with X11 support with:
-;;;   unset WAYLAND-DISPLAY; guix shell guile guile-raylib
+;;; To fix this issue until I find a better solution, I have temporaritly set LD_LIBRARY_PATH
+;;; to point to wayland libraries.
 
 
 
@@ -54,6 +51,7 @@
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages freedesktop)
   #:export (raylib-with-extras)
   #:export (guile-raylib))
 
@@ -120,6 +118,7 @@
     (native-inputs (list pkg-config))
     (inputs (list guile-3.0
 		  guile-lib
+		  wayland
 		  ))
     (propagated-inputs (list raylib-with-extras))
     (outputs '("out" "examples"))
@@ -185,6 +184,8 @@
 	       (install-file go (string-append lib-out "/site-ccache"))
 	       (install-file lib (string-append lib-out "/extensions"))
 	       (copy-recursively "examples" examples)
+	       (setenv "LD_LIBRARY_PATH" (let ((input (assoc-ref inputs "wayland")))
+					   (string-append input "/lib")))
 	       #t)))
 	 )))
 
