@@ -49,20 +49,63 @@
 	(revision "0")
         (commit "7b6aead9fb88b3623e3b3725ebb42670cbe4c579"))
     (package
-     (inherit glfw)
-     (name "glfw")
-     (version (git-version version revision commit))
-     (source (origin
-	      ;; The main goal here is to allow for '--with-branch'.
-	      (method git-fetch)
-	      (uri (git-reference
-		    (url "https://github.com/glfw/glfw.git")
-		    (commit commit)))
-	      (file-name (git-file-name name version))
-	      (sha256
-	       (base32
-                "1izxbb55hzi0b6jnfi11nvfsd3l85xzvb66jsb0ipkfxs95mdiqy"))))
-     (native-inputs (list doxygen-new unzip pkg-config))
-     )))
+      (inherit glfw)
+      (name "glfw")
+      (version (git-version version revision commit))
+      (source (origin
+		;; The main goal here is to allow for '--with-branch'.
+		(method git-fetch)
+		(uri (git-reference
+		      (url "https://github.com/glfw/glfw.git")
+		      (commit commit)))
+		(file-name (git-file-name name version))
+		(sha256
+		 (base32
+                  "1izxbb55hzi0b6jnfi11nvfsd3l85xzvb66jsb0ipkfxs95mdiqy"))))
+      (arguments
+       (list
+	#:modules '((guix build cmake-build-system)
+                    (guix build utils)
+                    (ice-9 format))
+	#:tests? #f                       ;no test target
+	#:configure-flags #~(list "-DBUILD_SHARED_LIBS=ON")
+	#:phases
+	#~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-sonames
+              (lambda* (#:key inputs #:allow-other-keys)
+		(let-syntax ((patch-sonames
+                              (syntax-rules ()
+				((_ (file ...) soname ...)
+				 (substitute* (list file ...)
+                                   (((format #f "(~@{~a~^|~})" soname ...) lib)
+                                    (search-input-file
+                                     inputs (string-append
+                                             "lib/" lib))))))))
+                  ;; Avoid looking in LD_LIBRARY_PATH for dlopen calls.
+                  (patch-sonames ("src/egl_context.c"
+                                  "src/glx_context.c"
+                                  "src/vulkan.c"
+                                  "src/wl_init.c"
+                                  "src/x11_init.c")
+				 "libEGL.so.1"
+				 "libGL.so"
+				 "libGL.so.1"
+				 "libGLESv1_CM.so.1"
+				 "libGLESv2.so.2"
+				 "libvulkan.so.1"
+				 "libwayland-cursor.so.0"
+				 "libwayland-client.so.0" ; patch needed for 3.4
+                                 "libwayland-egl.so.1"
+				 "libxkbcommon.so.0"
+				 "libXxf86vm.so.1"
+				 "libXi.so.6"
+				 "libXrandr.so.2"
+				 "libXcursor.so.1"
+				 "libXinerama.so.1"
+				 "libX11-xcb.so.1"
+				 "libXrender.so.1")))))))
+      (native-inputs (modify-inputs (package-native-inputs glfw)
+				    (prepend pkg-config)))
+      )))
 
 ;; glfw-new
