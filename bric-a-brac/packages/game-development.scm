@@ -50,7 +50,9 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages gl)
+  ;; #:use-module (gnu packages gl)
+  #:use-module (bric-a-brac packages gl)
+  #:use-module (gnu packages freedesktop)
   #:export (raylib-with-extras)
   #:export (guile-raylib))
 
@@ -97,8 +99,8 @@
 		     (mkdir-p output-directory)
 		     (copy-recursively source-directory output-directory)
 		     ))))))
-    (inputs (list glfw-3.4 pulseaudio))
-    (propagated-inputs (list glfw-3.4))
+    (inputs (list glfw-new pulseaudio))
+    (propagated-inputs (list glfw-new))
     ))
 
 (define-public guile-raylib
@@ -114,7 +116,7 @@
 	      (sha256
 	       (base32 "114v2rcwqyczqw80hzm6ij8iqfr93x43kj8qkq8gk7w49wcq8c5c"))))
     (build-system gnu-build-system)
-    (native-inputs (list pkg-config))
+    (native-inputs (list pkg-config glfw-new wayland))
     (inputs (list guile-3.0
 		  guile-lib
 		  ))
@@ -193,4 +195,4 @@
 
 ;; Uncommnent to install with `guix package -f guile-raylib.scm'
 ;; raylib-with-extras
-;; guile-raylib
+guile-raylib
