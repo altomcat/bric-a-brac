@@ -5,7 +5,7 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2024/08/10
-;; Version: 0.0.3
+;; Version: 0.0.4
 ;; Keywords: guile raylib
 
 ;; This file is part of GNU Emacs.
@@ -26,15 +26,6 @@
 ;;; Commentary:
 ;;; My attempt to create a guix definition package for `guile-raylib'.
 ;;;
-;;; As a wayland user, if you may encounter the following error:
-;;; WARNING: GLFW: Error: 65544 Description: Wayland: Failed to load libwayland-client
-;;; WARNING: GLFW: Failed to initialize GLFW
-;;;
-;;; That means GLFW fails to initialize under wayland because wayland libraries cannot be found.
-;;; Until I find a better solution, you  have to set LD_LIBRARY_PATH to point to wayland libraries.
-
-;;; A temporarily fix is to run guile-raylib with wayland support with:
-;;;   export LD_LIBRARY_PATH="$LIBRARY_PATH"; guix shell guile guile-raylib
 
 (define-module (bric-a-brac packages game-development)
   #:use-module ((guix licenses) #:prefix license:)
@@ -50,8 +41,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages pkg-config)
-  ;; #:use-module (gnu packages gl)
-  #:use-module (bric-a-brac packages gl)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages freedesktop)
   #:export (raylib-with-extras)
   #:export (guile-raylib))
@@ -66,12 +56,11 @@
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/raysan5/raylib/")
-                    (commit "5ede47618bd9f9a440af648da1b4817e51644994")))
+		    (commit "282d6478baa51a509bf0a4b1d761a0bd7fd8bbf7")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-		"0c00rysraqq9s82l0m0abpmrsaga572f5ddm2kdg9482qlzsq5gv"))))
-
+		"03ml6vhn6lsrcl9d5xg310hkkayxdccz660qs2zwfn9dwcsw2rl8"))))
     (arguments
      (list #:tests? #f  ;no test
 	   #:configure-flags
@@ -99,8 +88,8 @@
 		     (mkdir-p output-directory)
 		     (copy-recursively source-directory output-directory)
 		     ))))))
-    (inputs (list glfw-new pulseaudio))
-    (propagated-inputs (list glfw-new))
+    (inputs (list glfw-3.4 pulseaudio))
+    (propagated-inputs (list glfw-3.4))
     ))
 
 (define-public guile-raylib
@@ -116,10 +105,9 @@
 	      (sha256
 	       (base32 "114v2rcwqyczqw80hzm6ij8iqfr93x43kj8qkq8gk7w49wcq8c5c"))))
     (build-system gnu-build-system)
-    (native-inputs (list pkg-config glfw-new wayland))
+    (native-inputs (list pkg-config glfw-3.4 wayland))
     (inputs (list guile-3.0
-		  guile-lib
-		  ))
+		  guile-lib))
     (propagated-inputs (list raylib-with-extras))
     (outputs '("out" "examples"))
     (arguments
@@ -130,19 +118,19 @@
 	(guix build utils)
 	(srfi srfi-1))
        #:imported-modules ((guix build guile-build-system)
-			   ,@%gnu-build-system-modules)
+			   ,@%default-gnu-imported-modules)
        #:phases
        (modify-phases %standard-phases
-	 (delete 'configure)
-	 (delete 'strip)
-
-	 (add-before 'build 'my-build
+         (delete 'configure)
+	 (delete 'strip) ;; remove useless warning on go files.
+	 (delete 'install)
+	 (add-before 'build 'retrieve-raylib-api
 	   (lambda* (#:key inputs #:allow-other-keys)
 	     (let ((raylib-version (last (string-split (assoc-ref inputs "raylib") #\-)))
 		   (raylib-xml (string-append
 				(assoc-ref inputs "raylib")
 				"/parser/output/raylib_api.xml")))
-	       (copy-file raylib-xml (string-append (getcwd) "/raylib_api.xml"))
+	       (copy-file raylib-xml "raylib_api.xml")
 	       #t)))
 
 	 (add-after 'unpack 'fix-makefile
@@ -166,7 +154,7 @@
 					    (target-guile-effective-version))))
 	     #t))
 
-	 (add-after 'build 'compile-and-install-guile-object
+	 (add-after 'build 'compile-and-install-guile-raylib
 	   (lambda* (#:key inputs outputs #:allow-other-keys)
 	     (use-modules (guix build guile-build-system))
 	     (let* ((out (assoc-ref outputs "out"))
@@ -194,5 +182,5 @@
     (license license:zlib)))
 
 ;; Uncommnent to install with `guix package -f guile-raylib.scm'
-;; raylib-with-extras
+;;raylib-with-extras
 guile-raylib
