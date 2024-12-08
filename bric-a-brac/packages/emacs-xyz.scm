@@ -37,6 +37,7 @@
   ;; #:export (emacs-org-appear-0.3.1)
   #:export (emacs-consult-denote)
   #:export (emacs-hasliberg-theme)
+  #:export (emacs-miasma-theme)
   )
 
 (define emacs-hasliberg-theme
@@ -57,6 +58,29 @@
     (synopsis "An Emacs dark theme inspired by Swiss Alps.")
     (description "Hasliberg theme for Emacs has been designed for readability based on the LCH color space, to achieve a more homogenous color gradient for the theme.")
     (license license:gpl3)))
+
+(define emacs-miasma-theme
+  (let ((commit "76517179825b1af35db1dae7c73f615eacd2c973")
+        (revision "0"))
+    (package
+      (name "emacs-miasma-theme")
+      (version (git-version "1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+	       (url "https://github.com/daut/miasma-theme.el")
+	       (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00gqdxqa1vxs8zhnmqm6595v2n484289gqi4kq3c6acivhbg4knj"))))
+      (propagated-inputs (list emacs-autothemer))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/daut/miasma-theme.el")
+      (synopsis "Miasma theme for Emacs")
+      (description
+       "Miasma is a dark color theme for Emacs inspired by the woods. It is mostly a direct port of Miasma theme for @samp{vim} editor.")
+      (license license:gpl3))))
 
 (define emacs-substitute
   (package
@@ -85,7 +109,6 @@
        prompt for substitute text and perform the substitution outright.")
 
     (license license:gpl1+)))
-
 
 (define emacs-org-appear-0.3.1
   (package
@@ -132,5 +155,6 @@
 ;; Uncommnent to install with `guix package -f emacs-substitute.scm'
 ;; emacs-substitute
 ;; emacs-org-appear-0.3.1
-emacs-hasliberg-theme
+;; emacs-hasliberg-theme
 emacs-consult-denote
+;;emacs-miasma-theme
