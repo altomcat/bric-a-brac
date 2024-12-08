@@ -33,11 +33,31 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
-  #:export (emacs-substitute)
-  #:export (emacs-org-appear-0.3.1)
+  ;; #:export (emacs-substitute)
+  ;; #:export (emacs-org-appear-0.3.1)
+  #:export (emacs-hasliberg-theme)
   )
 
-(define-public emacs-substitute
+(define emacs-hasliberg-theme
+  (package
+    (name "emacs-hasliberg-theme")
+    (version "0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rytswd/hasliberg-theme.git")
+                    (commit "2188dcc77aec78581164ced8608b5ba23eca8859")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "19b7hi771v5qfbv3y4gqzhhsgc3bdzgh3jdvnimxyvhx3l3cgrwh"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rytswd/hasliberg-theme")
+    (synopsis "An Emacs dark theme inspired by Swiss Alps.")
+    (description "Hasliberg theme for Emacs has been designed for readability based on the LCH color space, to achieve a more homogenous color gradient for the theme.")
+    (license license:gpl3)))
+
+(define emacs-substitute
   (package
     (name "emacs-substitute")
     (version "0.1.8")
@@ -66,7 +86,7 @@
     (license license:gpl1+)))
 
 
-(define-public emacs-org-appear-0.3.1
+(define emacs-org-appear-0.3.1
   (package
     (inherit emacs-org-appear)
     (name "emacs-org-appear")
@@ -86,3 +106,4 @@
 ;; Uncommnent to install with `guix package -f emacs-substitute.scm'
 ;; emacs-substitute
 ;; emacs-org-appear-0.3.1
+emacs-hasliberg-theme
