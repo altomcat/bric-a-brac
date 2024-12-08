@@ -35,6 +35,7 @@
   #:use-module (gnu packages emacs-xyz)
   ;; #:export (emacs-substitute)
   ;; #:export (emacs-org-appear-0.3.1)
+  #:export (emacs-consult-denote)
   #:export (emacs-hasliberg-theme)
   )
 
@@ -102,8 +103,34 @@
         (base32 "1hfhnzhmbxrw4kz977s48x4nbq86vda5dvj00s2ima2i22b8l2z4"))))
     ))
 
+(define emacs-consult-denote
+  (package
+    (name "emacs-consult-denote")
+    (version "0.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/protesilaos/consult-denote")
+		    (commit "9fbe0f6a2636f46928f02ddde9c454f36aa45f39")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+		"0f4xjmapxwx7k4r1m0q3czjcrb5cgn5qh8ar5yn1fbmyygykwc6z"))))
+    (build-system emacs-build-system)
+    (inputs
+     (list emacs-denote
+	   emacs-consult))
+    (home-page "https://github.com/protesilaos/consult-denote")
+    (synopsis "Consult integration for Denote")
+    (description
+     "This package integrates the @code{emacs-denote} package with Daniel Mendler's @code{emacs-consult}.
+     The idea is to enhance minibuffer interactions, such as by providing a preview of the file-to-linked/opened
+     and by adding more sources to the @code{consult-buffer} command.")
+
+    (license license:gpl3)))
 
 ;; Uncommnent to install with `guix package -f emacs-substitute.scm'
 ;; emacs-substitute
 ;; emacs-org-appear-0.3.1
 emacs-hasliberg-theme
+emacs-consult-denote
