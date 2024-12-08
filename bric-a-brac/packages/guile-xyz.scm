@@ -33,15 +33,42 @@
   #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system guile)
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages freedesktop)
-  #:use-module (bric-a-brac packages game-development))
+  #:use-module (bric-a-brac packages game-development)
+  #:export (guile-pstk)
+  #:export (guile-raylib))
 
-(define-public guile-raylib
+(define guile-pstk
+  (package
+   (name "guile-pstk")
+   (version "0.0.0")
+   (source (origin
+	    (method git-fetch)
+	    (uri (git-reference
+		  (url "https://github.com/KikyTokamuro/guile-pstk")
+                  (commit "70396a6c49be6829b8fb6c3815bcb06dd17b2874")))
+	    (file-name (git-file-name name version))
+	    (sha256
+	     (base32 "0az4dxfw33q01p6rrvs7l847m7qf1626299mk4gfavz37km5l99h"))))
+   (build-system guile-build-system)
+   (inputs
+    (list guile-3.0
+	  tk
+	  tcl))
+   (home-page "https://github.com/KikyTokamuro/guile-pstk")
+   (synopsis "Guile implementation of PS/Tk, a portable Scheme interface to Tk GUI toolkit.")
+   (description
+    "PS/TK version (http://mirror.informatimago.com/scheme/www.t3x.org/pstk/index.html) fixed to work fine on modern GNU Guile")
+   (license license:bsd-3)))
+
+(define guile-raylib
   (let ((commit "e6b2ac8a21ac83c426ece993daa90ac04a90d0c2")
         (revision "0"))
     (package
@@ -137,4 +164,5 @@
       (license license:zlib))))
 
 ;; Uncommnent to install with `guix package -f guile-raylib'
-guile-raylib
+;;guile-raylib
+guile-pstk
