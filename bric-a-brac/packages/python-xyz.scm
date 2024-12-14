@@ -5,10 +5,14 @@
   ;;#:use-module (guix build-system python)
   #:use-module (guix build-system pyproject)
   #:use-module (guix git-download)
+  #:use-module (guix download)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages virtualization)
   )
 
 (define-public python-ukkonen
@@ -34,4 +38,30 @@
 distance (Ukkonen).")
     (license license:expat)))
 
-python-ukkonen
+(define-public python-libvirt
+  (package
+   (name "python-libvirt")
+   (version "10.6.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://libvirt.org/sources/python/libvirt-python-"
+                         version ".tar.gz"))
+     (sha256
+      (base32 "1r3rvkgnc6j813mcdr7fdfnxx58imzl16azjkg54yy2gfayrq9g4"))))
+   (build-system pyproject-build-system)
+   (inputs
+    (list libvirt))
+   (propagated-inputs
+    (list python-lxml))
+   (native-inputs
+    (list pkg-config python-pytest python-setuptools python-wheel))
+   (home-page "https://libvirt.org")
+   (synopsis "Python bindings to libvirt")
+   (description "This package provides Python bindings to the libvirt
+virtualization library.")
+   (properties
+    '((upstream-name . "libvirt-python")))
+   (license license:lgpl2.1+)))
+
+python-libvirt
