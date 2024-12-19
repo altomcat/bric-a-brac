@@ -28,6 +28,7 @@
 (define-module (bric-a-brac packages emacs-xyz)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system emacs)
   #:use-module (gnu packages)
@@ -54,6 +55,14 @@
                (base32
                 "19b7hi771v5qfbv3y4gqzhhsgc3bdzgh3jdvnimxyvhx3l3cgrwh"))))
     (build-system emacs-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'require-cl-lib
+            (lambda _
+              (substitute* "hasliberg-theme.el"
+                ((";;; Code:") ";;; Code:\n(require 'cl-lib)")))))))
     (home-page "https://github.com/rytswd/hasliberg-theme")
     (synopsis "An Emacs dark theme inspired by Swiss Alps.")
     (description "Hasliberg theme for Emacs has been designed for readability based on the LCH color space, to achieve a more homogenous color gradient for the theme.")
@@ -155,6 +164,6 @@
 ;; Uncommnent to install with `guix package -f emacs-substitute.scm'
 ;; emacs-substitute
 ;; emacs-org-appear-0.3.1
-;; emacs-hasliberg-theme
-emacs-consult-denote
+emacs-hasliberg-theme
+;; emacs-consult-denote
 ;;emacs-miasma-theme
