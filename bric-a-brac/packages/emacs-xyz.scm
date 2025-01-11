@@ -83,7 +83,6 @@
          (file-name (git-file-name name version))
          (sha256
           (base32 "00gqdxqa1vxs8zhnmqm6595v2n484289gqi4kq3c6acivhbg4knj"))))
-      (propagated-inputs (list emacs-autothemer))
       (build-system emacs-build-system)
       (home-page "https://github.com/daut/miasma-theme.el")
       (synopsis "Miasma theme for Emacs")
