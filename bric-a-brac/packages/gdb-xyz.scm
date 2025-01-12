@@ -40,10 +40,10 @@
 
 (define gf
   (let ((commit "ab47ef8a3f21cd6383b4f26f6b121754d448aaef")
-        (version "0.0.0"))
+        (revision "0"))
     (package
       (name "gf")
-      (version version)
+      (version (git-version "0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
