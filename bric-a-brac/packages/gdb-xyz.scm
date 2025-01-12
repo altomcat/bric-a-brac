@@ -59,7 +59,7 @@
              #:phases
              #~(modify-phases %standard-phases
                  (delete 'configure)
-                 (add-before 'build 'fix-header
+                 (add-before 'build 'fix-builder
                    (lambda _
                      (substitute* "build.sh"
                        (("if \\[.*;") "extra_flags=\"$(pkg-config --cflags freetype2) -D UI_FREETYPE $(pkg-config --libs freetype2)\"")
@@ -72,8 +72,9 @@
                  (replace 'install
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let ((gf2 "gf2")
-                           (out (assoc-ref outputs "out")))
-                       (install-file gf2 out))
+                           (bin (string-append (assoc-ref outputs "out")
+                                               "/bin")))
+                       (install-file gf2 bin))
                      #t)))))
       (native-inputs
        (list gdb
