@@ -95,9 +95,7 @@
        (list gdb
              libx11
              freetype
-             pkg-config
-             coreutils
-             grep))
+             pkg-config))
       (home-page "https://github.com/nakst/gf")
       (synopsis "A frontend for GDB.")
       (description
