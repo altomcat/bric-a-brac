@@ -62,11 +62,26 @@
                  (add-before 'build 'fix-builder
                    (lambda _
                      (substitute* "build.sh"
-                       (("if \\[.*;") "extra_flags=\"$(pkg-config --cflags freetype2) -D UI_FREETYPE $(pkg-config --libs freetype2)\"")
+                       (("if \\[.*;")
+                        (string-append
+                         "extra_flags=\"$(pkg-config --cflags freetype2)"
+                         " -DUI_FREETYPE"
+                         " $(pkg-config --libs freetype2)\""))
                        (("else.*fi") ""))
                      #t))
+                 (add-before 'build 'SSE2-ready
+                   (lambda _
+                     (when #$(string-prefix? "x86_64" (or (%current-system)
+                                                          (%current-target-system)))
+                           (substitute* "build.sh"
+                             (("uname.*\"") "extra_flags=\"$extra_flags -DUI_SSE2\""))
+                           (format #t (string-append
+                                       "Will compile with extra flag -DUI_SSE2"
+                                       " because architecture x86_64 has"
+                                       " been detected.\n")))
+                     #t))
                  (replace 'build
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (lambda _
                      (invoke "./build.sh")
                      #t))
                  (replace 'install
