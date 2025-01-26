@@ -45,19 +45,19 @@
     (package
      (name "odin")
      (version (git-version "0.0" revision commit))
-     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/odin-lang/Odin.git")
-                    (commit commit)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "17xgyr0xsg3bdfn472kniyld813vprm8g0x99qhj05w8wgirlxqr"))))
+     ;; (source (origin
+     ;;          (method git-fetch)
+     ;;          (uri (git-reference
+     ;;                (url "https://github.com/odin-lang/Odin.git")
+     ;;                (commit commit)))
+     ;;          (file-name (git-file-name name version))
+     ;;          (sha256
+     ;;           (base32
+     ;;            "17xgyr0xsg3bdfn472kniyld813vprm8g0x99qhj05w8wgirlxqr"))))
      ;; Useful to apply changes locally and confirm the right behavior
      ;; of the package we are building afterward
-     ;; (source (local-file "../../../projects/odin/Odin" "odin-checkout"
-     ;;                     #:recursive? #t))
+     (source (local-file "../../../projects/odin/Odin" "odin-checkout"
+                         #:recursive? #t))
      (build-system gnu-build-system)
      (arguments
       (list #:tests? #f
@@ -112,18 +112,14 @@
      (inputs
       (list clang-toolchain-19))
      (home-page "https://github.com/nakst/gf")
-     (synopsis "A modern, fast, and simple systems programming language.")
+     (synopsis "A modern, fast, and simple systems programming language")
      (description
-      "The Odin programming language is a modern systems programming language
-that emphasizes simplicity, performance, and productivity. Designed as an
-alternative to C, it is ideal for high-performance software development,
-including game engines, graphics programming, and systems-level code.
-Odin features a clear and expressive syntax, built-in support for data-oriented
-programming, a minimal runtime, and strong compile-time efficiency.
-It also provides seamless C interoperability, making it easy to integrate
-with existing C libraries.
-This package provides the Odin compiler and standard library for
-building and running Odin programs.")
+      "The Odin programming language is a modern systems language focused on simplicity,
+performance, and productivity.  Designed as an alternative to C, it is suited for
+high-performance development, including game engines, graphics programming, and systems
+code.  Odin provides expressive syntax, support for data-oriented programming, a minimal
+runtime, strong compile-time efficiency, and seamless C interoperability.  This package
+includes the Odin compiler and standard library for building and running Odin programs.")
      (license license:expat))))
 
 ;; Uncomment to install with `guix package -f odin'
