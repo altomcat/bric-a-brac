@@ -39,6 +39,7 @@
   #:export (emacs-consult-denote)
   #:export (emacs-hasliberg-theme)
   #:export (emacs-miasma-theme)
+  #:export (emacs-odin-mode)
   )
 
 (define emacs-hasliberg-theme
@@ -159,9 +160,30 @@
 
     (license license:gpl3)))
 
+(define emacs-odin-mode
+  (package
+    (name "emacs-odin-mode")
+    (version "0.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mattt-b/odin-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hfhnzhmbxrw4kz977s48x4nbq86vda5dvj00s2ima2i22b8l2z4"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mattt-b/odin-mode.git")
+    (synopsis "Emacs major mode for editing Odin code")
+    (description "This package provides an Emacs major mode for highlighting
+code written in the Odin programming language.")
+    (license #f)))
+
 ;; Uncommnent to install with `guix package -f emacs-substitute.scm'
 ;; emacs-substitute
 ;; emacs-org-appear-0.3.1
 ;; emacs-hasliberg-theme
 ;; emacs-consult-denote
-;;emacs-miasma-theme
+;; emacs-miasma-theme
+emacs-odin-mode
