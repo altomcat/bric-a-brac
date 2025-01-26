@@ -44,12 +44,12 @@
   #:export (raylib-with-extras))
 
 (define-public raylib-with-extras
-  (let ((commit "282d6478baa51a509bf0a4b1d761a0bd7fd8bbf7")
+  (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
         (revision "0"))
     (package
       (inherit raylib)
       (name "raylib")
-      (version (git-version "5.0" revision commit))
+      (version (git-version "5.5" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -58,7 +58,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "03ml6vhn6lsrcl9d5xg310hkkayxdccz660qs2zwfn9dwcsw2rl8"))))
+                  "08ywy0lrcmpjyahkap5i10wcx49cc145rhjb9n0yap0xqh3vizfg"))))
       (arguments
        (list #:tests? #f  ;no test
              #:configure-flags
