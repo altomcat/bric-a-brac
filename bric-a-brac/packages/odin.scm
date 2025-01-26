@@ -45,19 +45,19 @@
     (package
      (name "odin")
      (version (git-version "0.0" revision commit))
-     ;; (source (origin
-     ;;          (method git-fetch)
-     ;;          (uri (git-reference
-     ;;                (url "https://github.com/odin-lang/Odin.git")
-     ;;                (commit commit)))
-     ;;          (file-name (git-file-name name version))
-     ;;          (sha256
-     ;;           (base32
-     ;;            "17xgyr0xsg3bdfn472kniyld813vprm8g0x99qhj05w8wgirlxqr"))))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/odin-lang/Odin.git")
+                    (commit commit)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17xgyr0xsg3bdfn472kniyld813vprm8g0x99qhj05w8wgirlxqr"))))
      ;; Useful to apply changes locally and confirm the right behavior
      ;; of the package we are building afterward
-     (source (local-file "../../../projects/odin/Odin" "odin-checkout"
-                         #:recursive? #t))
+     ;; (source (local-file "../../../projects/odin/Odin" "odin-checkout"
+     ;;                     #:recursive? #t))
      (build-system gnu-build-system)
      (arguments
       (list #:tests? #f
@@ -123,4 +123,4 @@ includes the Odin compiler and standard library for building and running Odin pr
      (license license:expat))))
 
 ;; Uncomment to install with `guix package -f odin'
-odin
+;; odin
