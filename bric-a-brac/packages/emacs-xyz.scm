@@ -115,7 +115,6 @@
      These substitutions are meant to be as quick as possible and, as such, differ
       from the standard query-replace (which I still use).  The provided commands
        prompt for substitute text and perform the substitution outright.")
-
     (license license:gpl1+)))
 
 (define emacs-org-appear-0.3.1
@@ -146,7 +145,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-		"0f4xjmapxwx7k4r1m0q3czjcrb5cgn5qh8ar5yn1fbmyygykwc6z"))))
+	        "0f4xjmapxwx7k4r1m0q3czjcrb5cgn5qh8ar5yn1fbmyygykwc6z"))))
     (build-system emacs-build-system)
     (inputs
      (list emacs-denote
@@ -163,6 +162,6 @@
 ;; Uncommnent to install with `guix package -f emacs-substitute.scm'
 ;; emacs-substitute
 ;; emacs-org-appear-0.3.1
-emacs-hasliberg-theme
+;; emacs-hasliberg-theme
 ;; emacs-consult-denote
 ;;emacs-miasma-theme
