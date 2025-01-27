@@ -35,8 +35,15 @@ guix install guile-raylib
 
 * TODO Available packages
 
-| Packages           | Guix master branch? |
-|--------------------+---------------------|
-| font-iosevka-comfy | Yes                 |
-| emacs-substitute   | Yes                 |
-| guile-raylib       | Merge request       |
+| Packages                 | Guix master branch? |
+|--------------------------+---------------------|
+| emacs-substitute         | Yes                 |
+| emacs-consult-denote     | Yes                 |
+| emacs-miasma-theme       | ToDo                |
+| emacs-hasliberg-theme    | ToDo                |
+| font-iosevka-comfy       | Yes                 |
+| guile-pstk               | ToDo                |
+| guile-raylib             | Merge request       |
+| odin                     | Experimental        |
+| gf2 (gdb frontend)       | Experimental        |
+| raylib-with-extra (v5.5) | ToDo                |
