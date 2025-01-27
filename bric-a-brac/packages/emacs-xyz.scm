@@ -35,7 +35,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
   ;; #:export (emacs-substitute)
-  #:export (emacs-consult-denote)
+  ;; #:export (emacs-consult-denote)
   #:export (emacs-hasliberg-theme)
   #:export (emacs-miasma-theme)
   #:export (emacs-odin-mode))
