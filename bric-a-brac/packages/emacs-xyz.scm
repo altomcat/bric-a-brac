@@ -43,7 +43,7 @@
 (define emacs-odin-mode
   (package
    (name "emacs-odin-mode")
-   (version "0.0.0")
+   (version "0.0")
    (source
     (origin
      (method git-fetch)
@@ -88,26 +88,26 @@ code written in the Odin programming language.")
    (license license:gpl3)))
 
 (define emacs-miasma-theme
-  (let ((commit "76517179825b1af35db1dae7c73f615eacd2c973")
+  (let ((commit "251408da3b7243035c773c5c299353ab36bd2ec0")
         (revision "0"))
     (package
-      (name "emacs-miasma-theme")
-      (version (git-version "1.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-	       (url "https://github.com/daut/miasma-theme.el")
-	       (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "00gqdxqa1vxs8zhnmqm6595v2n484289gqi4kq3c6acivhbg4knj"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/daut/miasma-theme.el")
-      (synopsis "Miasma theme for Emacs")
-      (description
-       "Miasma is a dark color theme for Emacs inspired by the woods. It is mostly a direct port of Miasma theme for @samp{vim} editor.")
-      (license license:gpl3))))
+     (name "emacs-miasma-theme")
+     (version (git-version "1.3" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+	     (url "https://github.com/daut/miasma-theme.el")
+	     (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pb2caf4bj1aynj8mf1cy5syw0v3bf8xjxv78krpa6h9j3zpy7nb"))))
+     (build-system emacs-build-system)
+     (home-page "https://github.com/daut/miasma-theme.el")
+     (synopsis "Miasma theme for Emacs")
+     (description
+      "Miasma is a dark color theme for Emacs inspired by the woods. It is mostly a direct port of Miasma theme for @samp{vim} editor.")
+     (license license:gpl3))))
 
 (define emacs-substitute
   (package
@@ -167,4 +167,4 @@ code written in the Odin programming language.")
 ;; emacs-hasliberg-theme
 ;; emacs-consult-denote
 ;; emacs-miasma-theme
-emacs-odin-mode
+;; emacs-odin-mode
