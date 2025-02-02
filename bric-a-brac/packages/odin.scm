@@ -99,6 +99,13 @@
                        (copy-recursively src-core out-core)
                        (copy-recursively src-vendor out-vendor))
                      #t))
+                 (add-after 'install 'remove-static-libraries
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((out (string-append (assoc-ref outputs "out")
+                                               "/vendor")))
+                       (for-each delete-file
+                                 (find-files out "\\.(a|lib|dll)$")))
+                     #t))
                  (add-after 'install 'wrap-odin
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let* ((out (assoc-ref outputs "out"))
