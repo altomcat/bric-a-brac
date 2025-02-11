@@ -49,28 +49,28 @@
 
 (define box2d-3
   (package
-   (inherit box2d)
-   (name "box2d")
-   (version "3.0.0")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/erincatto/box2d")
-           (commit (string-append "v" version))))
-     (file-name (git-file-name name version))
-     (sha256
-      (base32 "0m01c23mxvg96zypqyi2fpkd1dsvgflafi3ncga6ihdvxbwaybk5"))))
-   (build-system cmake-build-system)
-   (arguments
-    (substitute-keyword-arguments (package-arguments box2d)
-                                  ((#:test-target f) "")
-                                  ((#:configure-flags original-flags)
-                                   `(cons* "-DBOX2D_AVX2=ON"
-                                           "-DBUILD_SHARED_LIBS=ON"
-                                           "-DBOX2D_UNIT_TESTS=OFF"
-                                           "-DBOX2D_SAMPLES=OFF"
-                                           ,original-flags))))))
+    (inherit box2d)
+    (name "box2d")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/erincatto/box2d")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m01c23mxvg96zypqyi2fpkd1dsvgflafi3ncga6ihdvxbwaybk5"))))
+    (build-system cmake-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments box2d)
+       ((#:test-target f) "")
+       ((#:configure-flags original-flags)
+        `(cons* "-DBOX2D_AVX2=ON"
+                "-DBUILD_SHARED_LIBS=ON"
+                "-DBOX2D_UNIT_TESTS=OFF"
+                "-DBOX2D_SAMPLES=OFF"
+                ,original-flags))))))
 
 (define-public raylib-with-extras
   (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
