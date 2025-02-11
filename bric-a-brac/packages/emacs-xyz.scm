@@ -39,7 +39,8 @@
   #:export (emacs-hasliberg-theme)
   #:export (emacs-miasma-theme)
   #:export (emacs-odin-mode)
-  #:export (emacs-odin-ts-mode))
+  #:export (emacs-odin-ts-mode)
+  #:export (emacs-flycheck-odin))
 
 (define emacs-odin-mode
   (let ((commit "65134ecf10ffc4893ca60432b979a23c5ac9a3f1")
