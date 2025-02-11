@@ -197,6 +197,29 @@ for editing Odin programming files. According to the author, this
 is still a work-in-progress.")
       (license license:expat))))
 
+(define emacs-flycheck-odin
+  (let ((commit "44147e3baccadf36d5403f470fab92ff433ba131")
+        (revision "0"))
+    (package
+      (name "emacs-flycheck-odin")
+      (version (git-version "0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mattt-b/flycheck-odin.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "02wisj5fwnm3020dii17iygswn2rhpjz0rc1529wnzll4vysrq27"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       (list emacs-flycheck))
+      (home-page "https://github.com/mattt-b/flycheck-odin")
+      (synopsis "Odin support for Flycheck")
+      (description "This package provides a Flycheck checker for Odin.")
+      (license license:expat))))
+
 
 ;; Uncommnent to install with `guix package -f emacs-substitute.scm'
 ;; emacs-substitute
@@ -206,3 +229,4 @@ is still a work-in-progress.")
 ;; emacs-miasma-theme
 ;; emacs-odin-mode
 ;; emacs-odin-ts-mode
+;; emacs-flycheck-odin
