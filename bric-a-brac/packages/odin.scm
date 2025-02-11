@@ -104,7 +104,7 @@
                      (let ((out (string-append (assoc-ref outputs "out")
                                                "/vendor")))
                        (for-each delete-file
-                                 (find-files out "\\.(a|lib|dll)$")))
+                                 (find-files out "\\.(a|so|lib|dll)$")))
                      #t))
                  (add-after 'install 'wrap-odin
                    (lambda* (#:key inputs outputs #:allow-other-keys)
