@@ -168,58 +168,68 @@ code written in the Odin programming language.")
   (let ((commit "1237bc341c6244e158be6c2c15414def6a24634d")
         (revision "0"))
     (package
-      (name "emacs-odin-ts-mode")
-      (version (git-version "0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/Sampie159/odin-ts-mode.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "08abm29cq64wbyxwk1vnkpasrfc167935xfjxqyii07z97knv2vq"))))
-      (build-system emacs-build-system)
-      (arguments
-       (list
-        #:phases
-        #~(modify-phases %standard-phases
-            (add-after 'unpack 'patch-treesit
-              ;; Use PulseAudio as raudio backend.
-              (lambda _
-                (substitute* "odin-ts-mode.el"
-                  (("\\(when \\(treesit-ready-p.*)" all)
-                   (string-append "(require 'treesit)\n"
-                                  all))))))))
-      (home-page "https://github.com/Sampie159/odin-ts-mode/tree/master")
-      (synopsis "Tree-sitter major mode for editing Odin files")
-      (description "This package provides a tree-sitter major mode
+     (name "emacs-odin-ts-mode")
+     (version (git-version "0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Sampie159/odin-ts-mode.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08abm29cq64wbyxwk1vnkpasrfc167935xfjxqyii07z97knv2vq"))))
+     (build-system emacs-build-system)
+     (arguments
+      (list
+       #:phases
+       #~(modify-phases %standard-phases
+                        (add-after 'unpack 'patch-treesit
+                                   (lambda _
+                                     (substitute* "odin-ts-mode.el"
+                                                  (("\\(when \\(treesit-ready-p.*)" all)
+                                                   (string-append "(require 'treesit)\n"
+                                                                  all))))))))
+     (home-page "https://github.com/Sampie159/odin-ts-mode/tree/master")
+     (synopsis "Tree-sitter major mode for editing Odin files")
+     (description "This package provides a tree-sitter major mode
 for editing Odin programming files. According to the author, this
 is still a work-in-progress.")
-      (license license:expat))))
+     (license license:expat))))
 
 (define emacs-flycheck-odin
   (let ((commit "44147e3baccadf36d5403f470fab92ff433ba131")
         (revision "0"))
     (package
-      (name "emacs-flycheck-odin")
-      (version (git-version "0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/mattt-b/flycheck-odin.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "02wisj5fwnm3020dii17iygswn2rhpjz0rc1529wnzll4vysrq27"))))
-      (build-system emacs-build-system)
-      (native-inputs
-       (list emacs-flycheck))
-      (home-page "https://github.com/mattt-b/flycheck-odin")
-      (synopsis "Odin support for Flycheck")
-      (description "This package provides a Flycheck checker for Odin.")
-      (license license:expat))))
+     (name "emacs-flycheck-odin")
+     (version (git-version "0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mattt-b/flycheck-odin.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02wisj5fwnm3020dii17iygswn2rhpjz0rc1529wnzll4vysrq27"))))
+     (build-system emacs-build-system)
+     (arguments
+      (list
+       #:phases
+       #~(modify-phases %standard-phases
+                        (add-after 'unpack 'patch-for-other-modes
+                                   (lambda _
+                                     (substitute* "flycheck-odin.el"
+                                                  ((":modes \\((.*)\\)" all modes)
+                                                   (string-append ":modes ("
+                                                                  modes
+                                                                  " odin-ts-mode)"))))))))
+     (native-inputs
+      (list emacs-flycheck))
+     (home-page "https://github.com/mattt-b/flycheck-odin")
+     (synopsis "Odin support for Flycheck")
+     (description "This package provides a Flycheck checker for Odin.")
+     (license license:expat))))
 
 
 ;; Uncommnent to install with `guix package -f emacs-substitute.scm'
