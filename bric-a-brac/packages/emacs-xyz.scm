@@ -38,55 +38,56 @@
   ;; #:export (emacs-consult-denote)
   #:export (emacs-hasliberg-theme)
   #:export (emacs-miasma-theme)
-  #:export (emacs-odin-mode))
+  #:export (emacs-odin-mode)
+  #:export (emacs-odin-ts-mode))
 
 (define emacs-odin-mode
   (let ((commit "65134ecf10ffc4893ca60432b979a23c5ac9a3f1")
         (revision "0"))
     (package
-      (name "emacs-odin-mode")
-      (version (git-version "0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/mattt-b/odin-mode")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32 "1bx0vaqq1va772gqgq7znicamqkz4ry0wai9rlvjwzc58axhml2b"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/mattt-b/odin-mode.git")
-      (synopsis "Emacs major mode for editing Odin code")
-      (description "This package provides an Emacs major mode for highlighting
+     (name "emacs-odin-mode")
+     (version (git-version "0.0" revision commit))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mattt-b/odin-mode")
+                    (commit commit)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1bx0vaqq1va772gqgq7znicamqkz4ry0wai9rlvjwzc58axhml2b"))))
+     (build-system emacs-build-system)
+     (home-page "https://github.com/mattt-b/odin-mode.git")
+     (synopsis "Emacs major mode for editing Odin code")
+     (description "This package provides an Emacs major mode for highlighting
 code written in the Odin programming language.")
-      (license #f))))
+     (license #f))))
 
 (define emacs-hasliberg-theme
   (package
-    (name "emacs-hasliberg-theme")
-    (version "0.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/rytswd/hasliberg-theme.git")
-                    (commit "2188dcc77aec78581164ced8608b5ba23eca8859")))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "19b7hi771v5qfbv3y4gqzhhsgc3bdzgh3jdvnimxyvhx3l3cgrwh"))))
-    (build-system emacs-build-system)
-    (arguments
-     (list
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'require-cl-lib
-            (lambda _
-              (substitute* "hasliberg-theme.el"
-                ((";;; Code:") ";;; Code:\n(require 'cl-lib)")))))))
-    (home-page "https://github.com/rytswd/hasliberg-theme")
-    (synopsis "An Emacs dark theme inspired by Swiss Alps.")
-    (description "Hasliberg theme for Emacs has been designed for readability based on the LCH color space, to achieve a more homogenous color gradient for the theme.")
-    (license license:gpl3)))
+   (name "emacs-hasliberg-theme")
+   (version "0.0")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/rytswd/hasliberg-theme.git")
+                  (commit "2188dcc77aec78581164ced8608b5ba23eca8859")))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "19b7hi771v5qfbv3y4gqzhhsgc3bdzgh3jdvnimxyvhx3l3cgrwh"))))
+   (build-system emacs-build-system)
+   (arguments
+    (list
+     #:phases
+     #~(modify-phases %standard-phases
+                      (add-after 'unpack 'require-cl-lib
+                                 (lambda _
+                                   (substitute* "hasliberg-theme.el"
+                                                ((";;; Code:") ";;; Code:\n(require 'cl-lib)")))))))
+   (home-page "https://github.com/rytswd/hasliberg-theme")
+   (synopsis "An Emacs dark theme inspired by Swiss Alps.")
+   (description "Hasliberg theme for Emacs has been designed for readability based on the LCH color space, to achieve a more homogenous color gradient for the theme.")
+   (license license:gpl3)))
 
 (define emacs-miasma-theme
   (let ((commit "251408da3b7243035c773c5c299353ab36bd2ec0")
@@ -139,28 +140,63 @@ code written in the Odin programming language.")
 
 (define emacs-consult-denote
   (package
-    (name "emacs-consult-denote")
-    (version "0.2.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/protesilaos/consult-denote")
-		    (commit "9fbe0f6a2636f46928f02ddde9c454f36aa45f39")))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-	        "0f4xjmapxwx7k4r1m0q3czjcrb5cgn5qh8ar5yn1fbmyygykwc6z"))))
-    (build-system emacs-build-system)
-    (inputs
-     (list emacs-denote
-	   emacs-consult))
-    (home-page "https://github.com/protesilaos/consult-denote")
-    (synopsis "Consult integration for Denote")
-    (description
-     "This package integrates the @code{emacs-denote} package with Daniel Mendler's @code{emacs-consult}.
+   (name "emacs-consult-denote")
+   (version "0.2.2")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/protesilaos/consult-denote")
+		  (commit "9fbe0f6a2636f46928f02ddde9c454f36aa45f39")))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+	      "0f4xjmapxwx7k4r1m0q3czjcrb5cgn5qh8ar5yn1fbmyygykwc6z"))))
+   (build-system emacs-build-system)
+   (inputs
+    (list emacs-denote
+	  emacs-consult))
+   (home-page "https://github.com/protesilaos/consult-denote")
+   (synopsis "Consult integration for Denote")
+   (description
+    "This package integrates the @code{emacs-denote} package with Daniel Mendler's @code{emacs-consult}.
      The idea is to enhance minibuffer interactions, such as by providing a preview of the file-to-linked/opened
      and by adding more sources to the @code{consult-buffer} command.")
-    (license license:gpl3)))
+   (license license:gpl3)))
+
+(define emacs-odin-ts-mode
+  (let ((commit "1237bc341c6244e158be6c2c15414def6a24634d")
+        (revision "0"))
+    (package
+      (name "emacs-odin-ts-mode")
+      (version (git-version "0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Sampie159/odin-ts-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "08abm29cq64wbyxwk1vnkpasrfc167935xfjxqyii07z97knv2vq"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-treesit
+              ;; Use PulseAudio as raudio backend.
+              (lambda _
+                (substitute* "odin-ts-mode.el"
+                  (("\\(when \\(treesit-ready-p.*)" all)
+                   (string-append "(require 'treesit)\n"
+                                  all))))))))
+      (home-page "https://github.com/Sampie159/odin-ts-mode/tree/master")
+      (synopsis "Tree-sitter major mode for editing Odin files")
+      (description "This package provides a tree-sitter major mode
+for editing Odin programming files. According to the author, this
+is still a work-in-progress.")
+      (license license:expat))))
+
 
 ;; Uncommnent to install with `guix package -f emacs-substitute.scm'
 ;; emacs-substitute
@@ -169,3 +205,4 @@ code written in the Odin programming language.")
 ;; emacs-consult-denote
 ;; emacs-miasma-theme
 ;; emacs-odin-mode
+;; emacs-odin-ts-mode
