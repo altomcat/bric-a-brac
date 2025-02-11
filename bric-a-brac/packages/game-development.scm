@@ -5,7 +5,7 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2024/08/10
-;; Version: 0.0.4
+;; Version: 0.0.5
 ;; Keywords: guile raylib
 
 ;; This file is part of GNU Emacs.
@@ -123,6 +123,19 @@
   writing your game.  This package also provides the API in a variety of file
 formats to create bindings for many programming languages."))))
 
+(define raylib-with-extras-static
+  (package
+    (inherit raylib-with-extras)
+    (name "raylib-static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments raylib-with-extras)
+       ((#:configure-flags original-flags)
+        #~(list"-DBUILD_SHARED_LIBS=OFF"
+               "-DWITH-PIC=ON"
+               "-DUSE_EXTERNAL_GLFW=ON"
+               "-DCMAKE_C_FLAGS=-lpulse"))))))
+
 ;; Uncommnent to install with `guix package -f raylib-with-extras'
-raylib-with-extras
-;;box2d-3
+;; raylib-with-extras
+;; raylib-with-extras-static
+;; box2d-3
