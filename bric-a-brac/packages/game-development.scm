@@ -93,6 +93,7 @@
              #:configure-flags
              #~(list "-DBUILD_SHARED_LIBS=ON"
                      "-DUSE_EXTERNAL_GLFW=ON"
+                     "-DWITH-PIC=ON"
                      "-DCMAKE_C_FLAGS=-lpulse")
              #:phases
              #~(modify-phases %standard-phases
