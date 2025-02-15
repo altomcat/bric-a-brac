@@ -45,6 +45,7 @@
   #:export (raylib-with-extras)
   #:export (raylib-with-extras-static)
   #:export (box2d-3)
+  #:export (box2d-static)
   )
 
 (define box2d-3
@@ -71,6 +72,20 @@
                 "-DBOX2D_UNIT_TESTS=OFF"
                 "-DBOX2D_SAMPLES=OFF"
                 ,original-flags))))))
+
+(define box2d+static
+  (package
+    (inherit box2d-3)
+    (name "box2d+static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments box2d)
+       ((#:test-target f) "")
+       ((#:configure-flags original-flags)
+        `(append ,original-flags
+                 '("-DBOX2D_AVX2=ON"
+                   "-DBUILD_SHARED_LIBS=OFF"
+                   "-DBOX2D_UNIT_TESTS=OFF"
+                   "-DBOX2D_SAMPLES=OFF")))))))
 
 (define-public raylib-with-extras
   (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
@@ -139,3 +154,4 @@ formats to create bindings for many programming languages."))))
 ;; raylib-with-extras
 ;; raylib-with-extras-static
 ;; box2d-3
+;; box2d+static
