@@ -5,7 +5,7 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2024/08/10
-;; Version: 0.0.5
+;; Version: 0.0.6
 ;; Keywords: guile raylib
 
 ;; This file is part of GNU Emacs.
@@ -45,7 +45,7 @@
   #:export (raylib-with-extras)
   #:export (raylib-with-extras-static)
   #:export (box2d-3)
-  #:export (box2d-static)
+  #:export (box2d+static)
   )
 
 (define box2d-3
