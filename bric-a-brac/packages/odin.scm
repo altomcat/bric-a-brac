@@ -107,7 +107,7 @@
                      (let* ((target-system #$(or (%current-target-system)
                                                  (%current-system)))
                             (box2d-lib-out (string-append #$output "/vendor/box2d/lib/"))
-                            (raylib-lib-out (string-append #$output "/vendor/raylib/lib/"))
+                            (raylib-lib-out (string-append #$output "/vendor/raylib/linux/"))
                             (box2d-lib (string-append #$box2d+static "/lib/libbox2d.a"))
                             (raylib-lib (string-append #$raylib-with-extras+static "/lib/libraylib.a")))
                        (cond
