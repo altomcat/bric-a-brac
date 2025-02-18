@@ -37,6 +37,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages commencement)
+  #:use-module (bric-a-brac packages game-development)
   #:export (odin))
 
 (define odin
@@ -103,6 +104,19 @@
                        (for-each delete-file
                                  (find-files out "\\.(a|so|lib|dll)$")))
                      #t))
+                 (add-after 'remove-static-libraries 'replace-static-libraries
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (let* ((target-system #$(or (%current-target-system)
+                                                 (%current-system)))
+                            (out (assoc-ref outputs "out"))
+                            (box2d-lib-out (string-append out "/vendor/box2d/lib/"))
+                            (box2d-lib (string-append (assoc-ref inputs "box2d+static")
+                                                      "/lib/libbox2d.a")))
+                       (cond
+                        ((string-prefix? "x86_64-linux" target-system)
+                         (copy-file box2d-lib (string-append box2d-lib-out "box2d_other_amd64_avx2.a")))
+                        (else
+                         '())))))
                  (add-after 'install 'wrap-odin
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let* ((out (assoc-ref outputs "out"))
@@ -121,7 +135,8 @@
              clang-toolchain-18
              ;;python-3
              which
-             patchelf))
+             patchelf
+             box2d+static))
       (inputs
        (list clang-toolchain-18))
       (home-page "https://github.com/nakst/gf")
