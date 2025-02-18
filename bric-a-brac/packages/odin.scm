@@ -85,21 +85,19 @@
                             (demo "demo")
                             (demo-odin (string-append  demo "-" odin))
                             (sources '("/base" "/core" "/vendor"))
-                            (src (assoc-ref inputs "source"))
-                            (out (assoc-ref outputs "out"))
-                            (bin (string-append out "/bin")))
+                            (bin (string-append #$output "/bin")))
                        (install-file odin bin)
                        (rename-file demo demo-odin)
                        (install-file demo-odin bin)
                        (for-each
                         (lambda (folder)
-                          (copy-recursively (string-append src folder)
-                                            (string-append out folder)))
+                          (copy-recursively (string-append #$source folder)
+                                            (string-append #$output folder)))
                         sources))
                      #t))
                  (add-after 'install 'remove-static-libraries
                    (lambda* (#:key outputs #:allow-other-keys)
-                     (let ((out (string-append (assoc-ref outputs "out")
+                     (let ((out (string-append #$output
                                                "/vendor")))
                        (for-each delete-file
                                  (find-files out "\\.(a|so|lib|dll)$")))
@@ -108,25 +106,23 @@
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let* ((target-system #$(or (%current-target-system)
                                                  (%current-system)))
-                            (out (assoc-ref outputs "out"))
-                            (box2d-lib-out (string-append out "/vendor/box2d/lib/"))
-                            (box2d-lib (string-append (assoc-ref inputs "box2d+static")
-                                                      "/lib/libbox2d.a")))
+                            (box2d-lib-out (string-append #$output "/vendor/box2d/lib/"))
+                            (raylib-lib-out (string-append #$output "/vendor/raylib/lib/"))
+                            (box2d-lib (string-append #$box2d+static "/lib/libbox2d.a"))
+                            (raylib-lib (string-append #$raylib-with-extras+static "/lib/libraylib.a")))
                        (cond
                         ((string-prefix? "x86_64-linux" target-system)
-                         (copy-file box2d-lib (string-append box2d-lib-out "box2d_other_amd64_avx2.a")))
+                         (copy-file box2d-lib (string-append box2d-lib-out "box2d_other_amd64_avx2.a"))
+                         (install-file raylib-lib raylib-lib-out))
                         (else
                          '())))))
                  (add-after 'install 'wrap-odin
                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref outputs "out"))
-                            (bin (string-append out "/bin/odin"))
-                            (llvm-lib (string-append (assoc-ref inputs "llvm")
-                                                     "/lib"))
-                            (clang-lib (string-append (assoc-ref inputs "clang-toolchain")
-                                                      "/lib")))
+                     (let* ((bin (string-append #$output "/bin/odin"))
+                            (llvm-lib (string-append #$llvm "/lib"))
+                            (clang-lib (string-append #$clang-toolchain "/lib")))
                        (wrap-program bin
-                         `("ODIN_ROOT" = (,out))
+                         `("ODIN_ROOT" = (,#$output))
                          `("LD_LIBRARY_PATH" = (,llvm-lib
                                                 ,clang-lib))))
                      #t)))))
@@ -136,7 +132,8 @@
              ;;python-3
              which
              patchelf
-             box2d+static))
+             box2d+static
+             raylib-with-extras+static))
       (inputs
        (list clang-toolchain-18))
       (home-page "https://github.com/nakst/gf")
