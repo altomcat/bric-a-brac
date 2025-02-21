@@ -100,7 +100,7 @@
                      (let ((out (string-append #$output
                                                "/vendor")))
                        (for-each delete-file
-                                 (find-files out "\\.(a|so|lib|dll)$")))
+                                 (find-files out "\\.(a|lib|dll|so(\\.[0-9]+)*)$")))
                      #t))
                  (add-after 'remove-static-libraries 'replace-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
