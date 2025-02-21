@@ -38,6 +38,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages commencement)
   #:use-module (bric-a-brac packages game-development)
+  #:use-module (bric-a-brac packages gl)
   #:export (odin))
 
 (define odin
@@ -108,12 +109,16 @@
                                                  (%current-system)))
                             (box2d-lib-out (string-append #$output "/vendor/box2d/lib/"))
                             (raylib-lib-out (string-append #$output "/vendor/raylib/linux/"))
+                            (glfw-lib-out (string-append #$output "/vendor/glfw/lib/"))
                             (box2d-lib (string-append #$box2d+static "/lib/libbox2d.a"))
-                            (raylib-lib (string-append #$raylib-with-extras+static "/lib/libraylib.a")))
+                            (raylib-lib (string-append #$raylib-with-extras+static "/lib/libraylib.a"))
+                            (glfw-lib (string-append #$glfw+static "/lib/libglfw3.a")))
                        (cond
                         ((string-prefix? "x86_64-linux" target-system)
                          (copy-file box2d-lib (string-append box2d-lib-out "box2d_other_amd64_avx2.a"))
-                         (install-file raylib-lib raylib-lib-out))
+                         (install-file raylib-lib raylib-lib-out)
+                         (install-file glfw-lib glfw-lib-out)
+                         )
                         (else
                          '())))))
                  (add-after 'install 'wrap-odin
@@ -133,6 +138,7 @@
              which
              patchelf
              box2d+static
+             glfw+static
              raylib-with-extras+static))
       (inputs
        (list clang-toolchain-18))
@@ -148,4 +154,4 @@ includes the Odin compiler and standard library for building and running Odin pr
       (license license:expat))))
 
 ;; Uncomment to install with `guix package -f odin'
-odin
+;; odin
