@@ -49,40 +49,40 @@
 
 (define box2d-3
   (package
-   (inherit box2d)
-   (name "box2d")
-   (version "3.0.0")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/erincatto/box2d")
-           (commit (string-append "v" version))))
-     (file-name (git-file-name name version))
-     (sha256
-      (base32 "0m01c23mxvg96zypqyi2fpkd1dsvgflafi3ncga6ihdvxbwaybk5"))))
-   (build-system cmake-build-system)
-   (arguments
-    (substitute-keyword-arguments (package-arguments box2d)
-                                  ((#:test-target f) "")
-                                  ((#:configure-flags original-flags)
-                                   `(append ,original-flags
-                                            '("-DBUILD_SHARED_LIBS=ON"
-                                              "-DBOX2D_UNIT_TESTS=OFF"
-                                              "-DBOX2D_SAMPLES=OFF")))))))
+    (inherit box2d)
+    (name "box2d")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/erincatto/box2d")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m01c23mxvg96zypqyi2fpkd1dsvgflafi3ncga6ihdvxbwaybk5"))))
+    (build-system cmake-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments box2d)
+       ((#:test-target f) "")
+       ((#:configure-flags original-flags)
+        `(append ,original-flags
+                 '("-DBUILD_SHARED_LIBS=ON"
+                   "-DBOX2D_UNIT_TESTS=OFF"
+                   "-DBOX2D_SAMPLES=OFF")))))))
 
 (define box2d+static
   (package
-   (inherit box2d-3)
-   (name "box2d+static")
-   (arguments
-    (substitute-keyword-arguments (package-arguments box2d)
-                                  ((#:test-target f) "")
-                                  ((#:configure-flags original-flags)
-                                   `(append ,original-flags
-                                            '("-DBUILD_SHARED_LIBS=OFF"
-                                              "-DBOX2D_UNIT_TESTS=OFF"
-                                              "-DBOX2D_SAMPLES=OFF")))))))
+    (inherit box2d-3)
+    (name "box2d+static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments box2d)
+       ((#:test-target f) "")
+       ((#:configure-flags original-flags)
+        `(append ,original-flags
+                 '("-DBUILD_SHARED_LIBS=OFF"
+                   "-DBOX2D_UNIT_TESTS=OFF"
+                   "-DBOX2D_SAMPLES=OFF")))))))
 
 (define-public raylib-with-extras
   (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
@@ -137,15 +137,15 @@ formats to create bindings for many programming languages."))))
 
 (define raylib-with-extras+static
   (package
-   (inherit raylib-with-extras)
-   (name "raylib+static")
-   (arguments
-    (substitute-keyword-arguments (package-arguments raylib-with-extras)
-                                  ((#:configure-flags original-flags)
-                                   #~(list"-DBUILD_SHARED_LIBS=OFF"
-                                          "-DWITH-PIC=ON"
-                                          "-DUSE_EXTERNAL_GLFW=ON"
-                                          "-DCMAKE_C_FLAGS=-lpulse"))))))
+    (inherit raylib-with-extras)
+    (name "raylib+static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments raylib-with-extras)
+       ((#:configure-flags original-flags)
+        #~(list"-DBUILD_SHARED_LIBS=OFF"
+               "-DWITH-PIC=ON"
+               "-DUSE_EXTERNAL_GLFW=OFF" ; glfw lib will be included
+               "-DCMAKE_C_FLAGS=-lpulse"))))))
 
 ;; Uncommnent to install with `guix package -f raylib-with-extras'
 ;; raylib-with-extras
