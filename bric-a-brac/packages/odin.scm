@@ -120,7 +120,7 @@
                             (stb-libs-out (string-append #$output "/vendor/stb/lib"))
                             (box2d-lib (string-append #$box2d+static "/lib/libbox2d.a"))
                             (raylib-lib (string-append #$raylib-with-extras+static "/lib/libraylib.a"))
-                            (raylib-shared-lib (string-append #$raylib-with-extras "/lib"))
+                            (raylib-shared-lib (string-append #$raylib-shared-odin "/lib"))
                             (glfw-lib (string-append #$glfw+static "/lib/libglfw3.a"))
                             (stb-libs (string-append (getcwd) "/vendor/stb/lib")))
                        (cond
@@ -153,7 +153,7 @@
              patchelf
              box2d+static
              glfw+static
-             raylib-with-extras
+             raylib-shared-odin
              raylib-with-extras+static))
       (inputs
        (list clang-toolchain-18))
