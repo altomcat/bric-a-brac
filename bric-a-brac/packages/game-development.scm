@@ -42,6 +42,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages base)
+  #:export (raylib-shared-odin)
   #:export (raylib-with-extras)
   #:export (raylib-with-extras+static)
   #:export (box2d-3)
@@ -84,7 +85,7 @@
                    "-DBOX2D_UNIT_TESTS=OFF"
                    "-DBOX2D_SAMPLES=OFF")))))))
 
-(define-public raylib-with-extras
+(define raylib-with-extras
   (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
         (revision "0"))
     (package
@@ -142,13 +143,27 @@ formats to create bindings for many programming languages."))))
     (arguments
      (substitute-keyword-arguments (package-arguments raylib-with-extras)
        ((#:configure-flags original-flags)
-        #~(list"-DBUILD_SHARED_LIBS=OFF"
-               "-DWITH-PIC=ON"
-               "-DUSE_EXTERNAL_GLFW=OFF" ; glfw lib will be included
-               "-DCMAKE_C_FLAGS=-lpulse"))))))
+        #~(cons* "-DBUILD_SHARED_LIBS=OFF"
+                 "-DWITH-PIC=ON"
+                 "-DUSE_EXTERNAL_GLFW=OFF" ; glfw lib will be included
+                 (delete "-DBUILD_SHARED_LIBS=ON"
+                         (delete  "-DUSE_EXTERNAL_GLFW=ON"
+                                  #$original-flags))))))))
+
+(define raylib-shared-odin
+  (package
+    (inherit raylib-with-extras)
+    (name "raylib-shared-odin")
+    (arguments
+     (substitute-keyword-arguments (package-arguments raylib-with-extras)
+       ((#:configure-flags original-flags)
+        ;; glfw lib will be included
+        #~(cons* "-DUSE_EXTERNAL_GLFW=OFF"
+                 (delete "-DUSE_EXTERNAL_GLFW=ON" #$original-flags)))))))
 
 ;; Uncommnent to install with `guix package -f raylib-with-extras'
 ;; raylib-with-extras
 ;; raylib-with-extras+static
+;; raylib-shared-odin
 ;; box2d-3
 ;; box2d+static
