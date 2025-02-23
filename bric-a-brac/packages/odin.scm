@@ -120,7 +120,7 @@
                             (stb-libs-out (string-append #$output "/vendor/stb/lib"))
                             (box2d-lib (string-append #$box2d+static "/lib/libbox2d.a"))
                             (raylib-lib (string-append #$raylib-with-extras+static "/lib/libraylib.a"))
-                            (raylib-shared-lib (string-append #$raylib-with-extras "/lib/libraylib.so.550"))
+                            (raylib-shared-lib (string-append #$raylib-with-extras "/lib"))
                             (glfw-lib (string-append #$glfw+static "/lib/libglfw3.a"))
                             (stb-libs (string-append (getcwd) "/vendor/stb/lib")))
                        (cond
@@ -130,7 +130,7 @@
                                      (install-file file stb-libs-out))
                                    (find-files stb-libs "\\.a$"))
                          (install-file raylib-lib raylib-lib-out)
-                         (install-file raylib-shared-lib raylib-lib-out)
+                         (copy-recursively raylib-shared-lib raylib-lib-out)
                          (install-file glfw-lib glfw-lib-out))
                         (else
                          '())))
