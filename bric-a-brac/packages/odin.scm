@@ -168,4 +168,4 @@ includes the Odin compiler and standard library for building and running Odin pr
       (license license:expat))))
 
 ;; Uncomment to install with `guix package -f odin'
-odin
+;; odin

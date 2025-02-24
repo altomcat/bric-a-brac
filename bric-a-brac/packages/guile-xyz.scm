@@ -86,7 +86,7 @@
       (native-inputs (list pkg-config glfw-3.4 wayland))
       (inputs (list guile-3.0
                     guile-lib))
-      (propagated-inputs (list raylib-with-extras))
+      (propagated-inputs (list raylib-5.5))
       (outputs '("out" "examples"))
       (arguments
        `(#:make-flags '("GUILE_AUTO_COMPILE=0")
@@ -164,5 +164,5 @@
       (license license:zlib))))
 
 ;; Uncommnent to install with `guix package -f guile-raylib'
-;;guile-raylib
-guile-pstk
+;; guile-raylib
+;; guile-pstk
