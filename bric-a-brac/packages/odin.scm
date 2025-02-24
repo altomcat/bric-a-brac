@@ -119,8 +119,8 @@
                             (glfw-lib-out (string-append #$output "/vendor/glfw/lib/"))
                             (stb-libs-out (string-append #$output "/vendor/stb/lib"))
                             (box2d-lib (string-append #$box2d+static "/lib/libbox2d.a"))
-                            (raylib-lib (string-append #$raylib-with-extras+static "/lib/libraylib.a"))
-                            (raylib-shared-lib (string-append #$raylib-shared-odin "/lib"))
+                            (raylib-lib (string-append #$raylib-for-odin+static "/lib/libraylib.a"))
+                            (raylib-shared-lib (string-append #$raylib-for-odin "/lib"))
                             (glfw-lib (string-append #$glfw+static "/lib/libglfw3.a"))
                             (stb-libs (string-append (getcwd) "/vendor/stb/lib")))
                        (cond
@@ -148,13 +148,12 @@
       (native-inputs
        (list llvm-18
              clang-toolchain-18
-             ;;python-3
              which
              patchelf
              box2d+static
              glfw+static
-             raylib-shared-odin
-             raylib-with-extras+static))
+             raylib-for-odin ;; useless ?
+             raylib-for-odin+static))
       (inputs
        (list clang-toolchain-18))
       (home-page "https://github.com/nakst/gf")
@@ -169,4 +168,4 @@ includes the Odin compiler and standard library for building and running Odin pr
       (license license:expat))))
 
 ;; Uncomment to install with `guix package -f odin'
-;; odin
+odin

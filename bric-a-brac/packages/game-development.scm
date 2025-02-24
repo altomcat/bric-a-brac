@@ -42,9 +42,9 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages base)
-  #:export (raylib-shared-odin)
-  #:export (raylib-with-extras)
-  #:export (raylib-with-extras+static)
+  #:export (raylib-for-odin)
+  #:export (raylib-for-odin+static)
+  #:export (raylib-5.5)
   #:export (box2d-3)
   #:export (box2d+static))
 
@@ -85,13 +85,14 @@
                    "-DBOX2D_UNIT_TESTS=OFF"
                    "-DBOX2D_SAMPLES=OFF")))))))
 
-(define raylib-with-extras
+(define raylib-5.5
   (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
+        (tag "5.5")
         (revision "0"))
     (package
       (inherit raylib)
       (name "raylib")
-      (version (git-version "5.5" revision commit))
+      (version (git-version tag revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -102,68 +103,47 @@
                  (base32
                   "08ywy0lrcmpjyahkap5i10wcx49cc145rhjb9n0yap0xqh3vizfg"))))
       (arguments
-       (list #:tests? #f  ;no test
-             #:configure-flags
-             #~(list "-DBUILD_SHARED_LIBS=ON"
-                     "-DUSE_EXTERNAL_GLFW=ON"
-                     "-DWITH-PIC=ON"
-                     "-DCMAKE_C_FLAGS=-lpulse")
-             #:phases
-             #~(modify-phases %standard-phases
-                 (add-before 'configure 'configure-miniaudio
-                   ;; Use PulseAudio as raudio backend.
-                   (lambda _
-                     (substitute* "src/raudio.c"
-                       (("^#include \"external/miniaudio\\.h\"") "
-   #define MA_NO_RUNTIME_LINKING
-   #define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
-   #define MA_ENABLE_PULSEAUDIO
-   #include \"external/miniaudio.h\"
-   "))))
-                 (add-before 'install 'install-parser
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (let ((out (string-append (assoc-ref outputs "out")
-                                               "/parser/output"))
-                           (src (string-append (assoc-ref inputs "source")
-                                               "/parser/output")))
-                       (mkdir-p out)
-                       (copy-recursively src out)))))))
-      (inputs (list glfw-3.4 pulseaudio))
-      (propagated-inputs (list glfw-3.4))
-      (description
-       "raylib is a high-level library for video game programming.  It aims to
-  abstract away platform and graphics details, allowing you to focus on
-  writing your game.  This package also provides the API in a variety of file
-formats to create bindings for many programming languages."))))
+       (substitute-keyword-arguments (package-arguments raylib)
+         ((#:phases current-phases)
+          #~(modify-phases #$current-phases
+              (add-after 'install 'install-parser
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (copy-recursively (string-append #$source "/parser/output")
+                                    (string-append #$output "/parser/output"))))))))
+      (inputs
+       (modify-inputs (package-inputs raylib)
+         (replace "glfw" glfw-3.4))))))
 
-(define raylib-with-extras+static
-  (package
-    (inherit raylib-with-extras)
-    (name "raylib+static")
-    (arguments
-     (substitute-keyword-arguments (package-arguments raylib-with-extras)
-       ((#:configure-flags original-flags)
-        #~(cons* "-DBUILD_SHARED_LIBS=OFF"
-                 "-DWITH-PIC=ON"
-                 "-DUSE_EXTERNAL_GLFW=OFF" ; glfw lib will be included
-                 (delete "-DBUILD_SHARED_LIBS=ON"
-                         (delete  "-DUSE_EXTERNAL_GLFW=ON"
-                                  #$original-flags))))))))
+(define raylib-for-odin+static
+  (let ((inherit-from raylib-5.5))
+    (package
+      (inherit inherit-from)
+      (name "raylib-for-odin+static")
+      (arguments
+       (substitute-keyword-arguments (package-arguments inherit-from)
+         ((#:configure-flags original-flags)
+          #~(cons* "-DBUILD_SHARED_LIBS=OFF"
+                   "-DWITH-PIC=ON"
+                   "-DUSE_EXTERNAL_GLFW=OFF" ; glfw lib will be embedded with Raylib
+                   (delete "-DBUILD_SHARED_LIBS=ON"
+                           (delete  "-DUSE_EXTERNAL_GLFW=ON"
+                                    #$original-flags)))))))))
 
-(define raylib-shared-odin
-  (package
-    (inherit raylib-with-extras)
-    (name "raylib-shared-odin")
-    (arguments
-     (substitute-keyword-arguments (package-arguments raylib-with-extras)
-       ((#:configure-flags original-flags)
-        ;; glfw lib will be included
-        #~(cons* "-DUSE_EXTERNAL_GLFW=OFF"
-                 (delete "-DUSE_EXTERNAL_GLFW=ON" #$original-flags)))))))
+(define raylib-for-odin
+  (let ((inherit-from raylib-5.5))
+    (package
+      (inherit inherit-from)
+      (name "raylib-shared-odin")
+      (arguments
+       (substitute-keyword-arguments (package-arguments inherit-from)
+         ((#:configure-flags original-flags)
+          ;; glfw library will be embedded with Raylib
+          #~(cons* "-DUSE_EXTERNAL_GLFW=OFF"
+                   (delete "-DUSE_EXTERNAL_GLFW=ON" #$original-flags))))))))
 
-;; Uncommnent to install with `guix package -f raylib-with-extras'
-;; raylib-with-extras
-;; raylib-with-extras+static
-;; raylib-shared-odin
+;; Uncommnent to install with `guix package -f raylib-5.5'
+;; raylib-for-odin+static
+;; raylib-for-odin
+;; raylib-5.5
 ;; box2d-3
 ;; box2d+static
