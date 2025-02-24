@@ -133,7 +133,7 @@
   (let ((inherit-from raylib-5.5))
     (package
       (inherit inherit-from)
-      (name "raylib-shared-odin")
+      (name "raylib-for-odin")
       (arguments
        (substitute-keyword-arguments (package-arguments inherit-from)
          ((#:configure-flags original-flags)
