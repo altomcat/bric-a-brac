@@ -52,6 +52,8 @@
      (substitute-keyword-arguments (package-arguments glfw-3.4)
        ((#:out-of-source? _ #f) #f)
        ((#:configure-flags original-flags)
-        #~(append #$original-flags '("-DBUILD_SHARED_LIBS=OFF")))))))
+        #~(cons* "-DBUILD_SHARED_LIBS=OFF"
+                 (delete "-DBUILD_SHARED_LIBS=ON"
+                         #$original-flags)))))))
 
 ;; glfw+static
