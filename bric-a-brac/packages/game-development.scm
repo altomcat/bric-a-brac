@@ -42,6 +42,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages xdisorg)
   #:export (raylib-for-odin)
   #:export (raylib-for-odin+static)
   #:export (raylib-5.5)
@@ -112,7 +113,7 @@
                                     (string-append #$output "/parser/output"))))))))
       (inputs
        (modify-inputs (package-inputs raylib)
-         (replace "glfw" glfw-3.4))))))
+                      (replace "glfw" glfw-3.4))))))
 
 (define raylib-for-odin+static
   (let ((inherit-from raylib-5.5))
@@ -123,11 +124,15 @@
        (substitute-keyword-arguments (package-arguments inherit-from)
          ((#:configure-flags original-flags)
           #~(cons* "-DBUILD_SHARED_LIBS=OFF"
-                   "-DWITH-PIC=ON"
+                   "-DWITH_PIC=ON"
                    "-DUSE_EXTERNAL_GLFW=OFF" ; glfw lib will be embedded with Raylib
+                   "-DGLFW_BUILD_WAYLAND=ON"
                    (delete "-DBUILD_SHARED_LIBS=ON"
                            (delete  "-DUSE_EXTERNAL_GLFW=ON"
-                                    #$original-flags)))))))))
+                                    #$original-flags))))))
+      (native-inputs
+       (modify-inputs (package-inputs raylib-5.5)
+                      (append  pkg-config wayland libxkbcommon))))))
 
 (define raylib-for-odin
   (let ((inherit-from raylib-5.5))
@@ -139,7 +144,11 @@
          ((#:configure-flags original-flags)
           ;; glfw library will be embedded with Raylib
           #~(cons* "-DUSE_EXTERNAL_GLFW=OFF"
-                   (delete "-DUSE_EXTERNAL_GLFW=ON" #$original-flags))))))))
+                   "-DGLFW_BUILD_WAYLAND=ON"
+                   (delete "-DUSE_EXTERNAL_GLFW=ON" #$original-flags)))))
+      (native-inputs
+       (modify-inputs (package-inputs raylib-5.5)
+                      (append  pkg-config wayland libxkbcommon))))))
 
 ;; Uncommnent to install with `guix package -f raylib-5.5'
 ;; raylib-for-odin+static
