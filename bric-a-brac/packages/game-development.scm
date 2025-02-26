@@ -5,8 +5,8 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2024/08/10
-;; Version: 0.0.7
-;; Keywords: guile raylib
+;; Version: 0.0.8
+;; Keywords: raylib box2d odin
 
 ;; This file is part of GNU Emacs.
 
@@ -131,7 +131,10 @@
                                     #$original-flags))))))
       (native-inputs
        (modify-inputs (package-inputs raylib-5.5)
-                      (append  pkg-config wayland libxkbcommon))))))
+                      (append pkg-config wayland libxkbcommon)))
+      (inputs
+       (modify-inputs (package-inputs raylib-5.5)
+                      (append wayland libxkbcommon))))))
 
 (define raylib-for-odin
   (let ((inherit-from raylib-5.5))
@@ -147,7 +150,10 @@
                    (delete "-DUSE_EXTERNAL_GLFW=ON" #$original-flags)))))
       (native-inputs
        (modify-inputs (package-inputs raylib-5.5)
-                      (append  pkg-config wayland libxkbcommon))))))
+                      (append  pkg-config wayland libxkbcommon)))
+      (inputs
+       (modify-inputs (package-inputs raylib-5.5)
+                      (append wayland libxkbcommon))))))
 
 ;; Uncommnent to install with `guix package -f raylib-5.5'
 ;; raylib-for-odin+static
