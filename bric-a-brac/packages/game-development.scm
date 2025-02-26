@@ -68,10 +68,9 @@
      (substitute-keyword-arguments (package-arguments box2d)
        ((#:test-target f) "")
        ((#:configure-flags original-flags)
-        `(append ,original-flags
-                 '("-DBUILD_SHARED_LIBS=ON"
-                   "-DBOX2D_UNIT_TESTS=OFF"
-                   "-DBOX2D_SAMPLES=OFF")))))))
+        `(cons* "-DBOX2D_UNIT_TESTS=OFF"
+                "-DBOX2D_SAMPLES=OFF"
+                ,original-flags))))))
 
 (define box2d+static
   (package
@@ -81,10 +80,10 @@
      (substitute-keyword-arguments (package-arguments box2d)
        ((#:test-target f) "")
        ((#:configure-flags original-flags)
-        `(append ,original-flags
-                 '("-DBUILD_SHARED_LIBS=OFF"
-                   "-DBOX2D_UNIT_TESTS=OFF"
-                   "-DBOX2D_SAMPLES=OFF")))))))
+        `(cons* "-DBUILD_SHARED_LIBS=OFF"
+                "-DBOX2D_UNIT_TESTS=OFF"
+                "-DBOX2D_SAMPLES=OFF"
+                (delete "-DBUILD_SHARED_LIBS=ON" ,original-flags)))))))
 
 (define raylib-5.5
   (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
