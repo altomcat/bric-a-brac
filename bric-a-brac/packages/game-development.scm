@@ -5,8 +5,8 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2024/08/10
-;; Version: 0.0.8
-;; Keywords: raylib box2d odin
+;; Version: 0.0.9
+;; Keywords: raylib box2d
 
 ;; This file is part of GNU Emacs.
 
@@ -40,14 +40,8 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages xdisorg)
-  #:export (raylib-for-odin)
-  #:export (raylib-for-odin+static)
   #:export (raylib-5.5)
-  #:export (box2d-3)
-  #:export (box2d+static))
+  #:export (box2d-3))
 
 (define box2d-3
   (package
@@ -72,18 +66,6 @@
                 "-DBOX2D_SAMPLES=OFF"
                 ,original-flags))))))
 
-(define box2d+static
-  (package
-    (inherit box2d-3)
-    (name "box2d+static")
-    (arguments
-     (substitute-keyword-arguments (package-arguments box2d)
-       ((#:test-target f) "")
-       ((#:configure-flags original-flags)
-        `(cons* "-DBUILD_SHARED_LIBS=OFF"
-                "-DBOX2D_UNIT_TESTS=OFF"
-                "-DBOX2D_SAMPLES=OFF"
-                (delete "-DBUILD_SHARED_LIBS=ON" ,original-flags)))))))
 
 (define raylib-5.5
   (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
@@ -114,50 +96,7 @@
        (modify-inputs (package-inputs raylib)
                       (replace "glfw" glfw-3.4))))))
 
-(define raylib-for-odin+static
-  (let ((inherit-from raylib-5.5))
-    (package
-      (inherit inherit-from)
-      (name "raylib-for-odin+static")
-      (arguments
-       (substitute-keyword-arguments (package-arguments inherit-from)
-         ((#:configure-flags original-flags)
-          #~(cons* "-DBUILD_SHARED_LIBS=OFF"
-                   "-DWITH_PIC=ON"
-                   "-DUSE_EXTERNAL_GLFW=OFF" ; glfw lib will be embedded with Raylib
-                   "-DGLFW_BUILD_WAYLAND=ON"
-                   (delete "-DBUILD_SHARED_LIBS=ON"
-                           (delete  "-DUSE_EXTERNAL_GLFW=ON"
-                                    #$original-flags))))))
-      (native-inputs
-       (modify-inputs (package-inputs raylib-5.5)
-                      (append pkg-config wayland libxkbcommon)))
-      (inputs
-       (modify-inputs (package-inputs raylib-5.5)
-                      (append wayland libxkbcommon))))))
-
-(define raylib-for-odin
-  (let ((inherit-from raylib-5.5))
-    (package
-      (inherit inherit-from)
-      (name "raylib-for-odin")
-      (arguments
-       (substitute-keyword-arguments (package-arguments inherit-from)
-         ((#:configure-flags original-flags)
-          ;; glfw library will be embedded with Raylib
-          #~(cons* "-DUSE_EXTERNAL_GLFW=OFF"
-                   "-DGLFW_BUILD_WAYLAND=ON"
-                   (delete "-DUSE_EXTERNAL_GLFW=ON" #$original-flags)))))
-      (native-inputs
-       (modify-inputs (package-inputs raylib-5.5)
-                      (append  pkg-config wayland libxkbcommon)))
-      (inputs
-       (modify-inputs (package-inputs raylib-5.5)
-                      (append wayland libxkbcommon))))))
 
 ;; Uncommnent to install with `guix package -f raylib-5.5'
-;; raylib-for-odin+static
-;; raylib-for-odin
 ;; raylib-5.5
 ;; box2d-3
-;; box2d+static
