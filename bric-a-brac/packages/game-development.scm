@@ -64,8 +64,7 @@
        ((#:configure-flags original-flags)
         `(cons* "-DBOX2D_UNIT_TESTS=OFF"
                 "-DBOX2D_SAMPLES=OFF"
-                ,original-flags))))))
-
+                (delete "-DBOX2D_BUILD_TESTBED=OFF" ,original-flags)))))))
 
 (define raylib-5.5
   (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
