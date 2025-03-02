@@ -105,7 +105,14 @@
                      #t))
                  (add-after 'install 'build-stb-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (with-directory-excursion (string-append (getcwd) "/vendor/stb/src")
+                     (with-directory-excursion "./vendor/stb/src"
+                       (setenv "CC" (which "gcc"))
+                       (setenv "AR" (which "gcc-ar"))
+                       (invoke (which "make") "unix"))
+                     #t))
+                 (add-after 'install 'build-cgltf-static-libraries
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (with-directory-excursion "./vendor/cgltf/src"
                        (setenv "CC" (which "gcc"))
                        (setenv "AR" (which "gcc-ar"))
                        (invoke (which "make") "unix"))
@@ -118,17 +125,27 @@
                             (raylib-lib-out (string-append #$output "/vendor/raylib/linux/"))
                             (glfw-lib-out (string-append #$output "/vendor/glfw/lib/"))
                             (stb-libs-out (string-append #$output "/vendor/stb/lib"))
-                            (box2d-lib (string-append #$box2d+static "/lib/libbox2d.a"))
-                            (raylib-lib (string-append #$raylib-for-odin+static "/lib/libraylib.a"))
+                            (cgltf-lib-out (string-append #$output "/vendor/cgltf/lib"))
+                            (box2d-avx2-lib (string-append #$box2d-avx2+static
+                                                           "/lib/libbox2d.a"))
+                            (box2d-simd-lib (string-append #$box2d-simd+static
+                                                           "/lib/libbox2d.a"))
+                            (raylib-lib (string-append #$raylib-for-odin+static
+                                                       "/lib/libraylib.a"))
                             (raylib-shared-lib (string-append #$raylib-for-odin "/lib"))
                             (glfw-lib (string-append #$glfw+static "/lib/libglfw3.a"))
-                            (stb-libs (string-append (getcwd) "/vendor/stb/lib")))
+                            (stb-libs (string-append (getcwd) "/vendor/stb/lib"))
+                            (cgltf-lib (string-append (getcwd) "/vendor/cgltf/lib/cgltf.a")))
                        (cond
                         ((string-prefix? "x86_64-linux" target-system)
-                         (copy-file box2d-lib (string-append box2d-lib-out "box2d_other_amd64_avx2.a"))
+                         (copy-file box2d-avx2-lib (string-append box2d-lib-out
+                                                                  "box2d_other_amd64_avx2.a"))
+                         (copy-file box2d-simd-lib (string-append box2d-lib-out
+                                                                  "box2d_other_amd64_simd.a"))
                          (for-each (lambda (file)
                                      (install-file file stb-libs-out))
                                    (find-files stb-libs "\\.a$"))
+                         (install-file cgltf-lib cgltf-lib-out)
                          (install-file raylib-lib raylib-lib-out)
                          (copy-recursively raylib-shared-lib raylib-lib-out)
                          (install-file glfw-lib glfw-lib-out))
