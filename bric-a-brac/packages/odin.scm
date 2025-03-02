@@ -27,16 +27,26 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix gexp)
+  #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages python)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages commencement)
+  ;;
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gl)
+  ;;
   #:use-module (bric-a-brac packages game-development)
   #:use-module (bric-a-brac packages gl)
   #:export (odin))
@@ -66,7 +76,8 @@
                (snippet
                 '(begin
                    ;; (for-each delete-file-recursively
-                   ;;           (find-files "vendor" "(darwin|macos|windows)" #:directories? #t))
+                   ;;           (find-files "vendor"
+                   ;;                       "(darwin|macos|windows)" #:directories? #t))
                    (for-each delete-file
                              (find-files "vendor" "\\.(a|o|lib|dll|so(\\.[0-9]+)*)$"))))))))
       (build-system gnu-build-system)
@@ -167,12 +178,14 @@
              clang-toolchain-18
              which
              patchelf
-             box2d+static
+             box2d-avx2+static
+             box2d-simd+static
              glfw+static
-             raylib-for-odin ;; useless ?
+             raylib-for-odin
              raylib-for-odin+static))
       (inputs
-       (list clang-toolchain-18))
+       (list clang-toolchain-18
+             bash-minimal))
       (home-page "https://github.com/nakst/gf")
       (synopsis "A modern, fast, and simple systems programming language")
       (description
@@ -184,5 +197,97 @@ runtime, strong compile-time efficiency, and seamless C interoperability.  This 
 includes the Odin compiler and standard library for building and running Odin programs.")
       (license license:expat))))
 
+(define box2d-avx2+static
+  (package
+    (inherit box2d-3)
+    (name "box2d-avx2+static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments box2d)
+       ((#:test-target f) "")
+       ((#:configure-flags original-flags)
+        `(cons* "-DBUILD_SHARED_LIBS=OFF"
+                "-DBOX2D_AVX2=ON"
+                "-DBOX2D_UNIT_TESTS=OFF"
+                "-DBOX2D_SAMPLES=OFF"
+                (filter (lambda (flag)
+                          (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
+                                              "-DBOX2D_AVX2=OFF"
+                                              "-DBUILD_SHARED_LIBS=ON"))))
+                        ,original-flags)))))))
+
+(define box2d-simd+static
+  (package
+    (inherit box2d-3)
+    (name "box2d-simd+static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments box2d)
+       ((#:test-target f) "")
+       ((#:configure-flags original-flags)
+        `(cons* "-DBUILD_SHARED_LIBS=OFF"
+                "-DBOX2D_AVX2=OFF"
+                "-DBOX2D_UNIT_TESTS=OFF"
+                "-DBOX2D_SAMPLES=OFF"
+                (filter (lambda (flag)
+                          (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
+                                              "-DBOX2D_AVX2=ON"
+                                              "-DBUILD_SHARED_LIBS=ON"))))
+                        ,original-flags)))))))
+
+;; When using USE_EXTERNAL_GLFW=OFF (default Odin compilation flag) that means
+;; GLFW is embedded to Raylib, X11 becomes the default backend with my wayland
+;; session. It's not the case with the raylib-5.5 build with an external
+;; GLFW-3.4 shared library.
+(define raylib-for-odin
+  (package
+   (inherit raylib-5.5)
+   (name "raylib-for-odin")))
+
+;; (define raylib-for-odin
+;;   (let ((inherit-from raylib-5.5))
+;;     (package
+;;       (inherit inherit-from-pkg)
+;; (name "raylib-for-odin")
+;;       (arguments
+;;        (substitute-keyword-arguments (package-arguments inherit-from-pkg)
+;;          ((#:configure-flags original-flags)
+;;           ;; glfw library will be embedded with Raylib
+;;           ;; (doesn´t work with wayland, glfw 3.4?)
+;;           #~(cons* "-DUSE_EXTERNAL_GLFW=OFF"
+;;                    "-DGLFW_BUILD_WAYLAND=ON"
+;;                    (delete "-DUSE_EXTERNAL_GLFW=ON" #$original-flags)))))
+;;       (native-inputs
+;;        (modify-inputs (package-native-inputs inherit-from-pkg)
+;;                       (append pkg-config
+;;                               wayland
+;;                               libxkbcommon))))))
+
+;; The previous explanation is true for static build too.
+;; There is no work-around at the moment because GLFW needs to be embedded.
+;; The final executable is linked against libraylib.a with GLFW embedded in it.
+;; Add `mesa' package to be able to use X11 backend only.
+(define raylib-for-odin+static
+  (let ((inherit-from-pkg raylib-5.5))
+    (package
+      (inherit inherit-from-pkg)
+      (name "raylib-for-odin+static")
+      (arguments
+       (substitute-keyword-arguments (package-arguments inherit-from-pkg)
+         ((#:configure-flags original-flags)
+          #~(cons* "-DBUILD_SHARED_LIBS=OFF"
+                   "-DWITH_PIC=ON"
+                   "-DUSE_EXTERNAL_GLFW=OFF" ; glfw lib will be embedded with Raylib
+                   "-DGLFW_BUILD_WAYLAND=ON" ; not working at the moment
+                   (filter (lambda (flag)
+                             (not (member flag '("-DBUILD_SHARED_LIBS=ON"
+                                                 "-DUSE_EXTERNAL_GLFW=ON"))))
+                           #$original-flags)))))
+      (native-inputs
+       (modify-inputs (package-native-inputs inherit-from-pkg)
+                      (append pkg-config
+                              wayland
+                              libxkbcommon))))))
+
 ;; Uncomment to install with `guix package -f odin'
-;; odin
+;; raylib-for-odin+static
+;; box2d-simd+static
+;; box2d-avx2+static
