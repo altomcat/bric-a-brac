@@ -88,13 +88,12 @@
          ((#:phases current-phases)
           #~(modify-phases #$current-phases
               (add-after 'install 'install-parser
-                (lambda* (#:key outputs #:allow-other-keys)
+                (lambda _
                   (copy-recursively (string-append #$source "/parser/output")
                                     (string-append #$output "/parser/output"))))))))
       (inputs
        (modify-inputs (package-inputs raylib)
                       (replace "glfw" glfw-3.4))))))
-
 
 ;; Uncommnent to install with `guix package -f raylib-5.5'
 ;; raylib-5.5
