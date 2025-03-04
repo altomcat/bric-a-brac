@@ -187,7 +187,7 @@
        (list clang-toolchain-18
              wayland
              libxkbcommon
-             glfw@3.4
+             glfw-3.4
              mesa
              bash-minimal))
       (home-page "https://github.com/nakst/gf")
@@ -296,3 +296,4 @@ includes the Odin compiler and standard library for building and running Odin pr
 ;; raylib-for-odin+static
 ;; box2d-simd+static
 ;; box2d-avx2+static
+;; odin
