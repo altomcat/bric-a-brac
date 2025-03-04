@@ -185,6 +185,10 @@
              raylib-for-odin+static))
       (inputs
        (list clang-toolchain-18
+             wayland
+             libxkbcommon
+             glfw@3.4
+             mesa
              bash-minimal))
       (home-page "https://github.com/nakst/gf")
       (synopsis "A modern, fast, and simple systems programming language")
@@ -265,6 +269,7 @@ includes the Odin compiler and standard library for building and running Odin pr
 ;; There is no work-around at the moment because GLFW needs to be embedded.
 ;; The final executable is linked against libraylib.a with GLFW embedded in it.
 ;; Add `mesa' package to be able to use X11 backend only.
+;; EDIT for wayland : add `wayland', `libxkbcommon' and `glfw@3.4'
 (define raylib-for-odin+static
   (let ((inherit-from-pkg raylib-5.5))
     (package

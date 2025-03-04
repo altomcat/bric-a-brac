@@ -2,7 +2,6 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
   #:use-module (guix packages)
-  ;;#:use-module (guix build-system python)
   #:use-module (guix build-system pyproject)
   #:use-module (guix git-download)
   #:use-module (guix download)
@@ -13,7 +12,30 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages virtualization)
-  )
+  #:use-module (gnu packages python-web)
+ #:export (python-obsws-python))
+
+;; This definition package has been created with guix import
+(define python-obsws-python
+  (package
+    (name "python-obsws-python")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "obsws_python" version))
+       (sha256
+        (base32 "08gabra8fb6nda642si3jlqhizdsr2ylyazai2p50hn5hc1d15r2"))))
+    (build-system pyproject-build-system)
+    (arguments
+     `(#:tests? #f))
+    (propagated-inputs (list python-tomli python-websocket-client))
+    (native-inputs (list python-hatchling))
+    (home-page "https://github.com/aatikturk/obsws-python")
+    (synopsis "A Python SDK for OBS Studio WebSocket v5.0")
+    (description
+     "This package provides a Python SDK for OBS Studio @code{WebSocket} v5.0.")
+    (license license:expat)))
 
 (define-public python-ukkonen
   (package
@@ -64,4 +86,6 @@ virtualization library.")
     '((upstream-name . "libvirt-python")))
    (license license:lgpl2.1+)))
 
-python-libvirt
+;; Uncomment to install with `guix package -f python-obsws-python'
+;; python-libvirt
+python-obsws-python
