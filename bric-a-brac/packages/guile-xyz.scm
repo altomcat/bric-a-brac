@@ -5,7 +5,7 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2024/10/07
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Keywords: guile raylib
 
 ;; This file is part of GNU Emacs.
@@ -41,7 +41,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages freedesktop)
-  #:use-module (bric-a-brac packages game-development)
+  #:use-module (gnu packages game-development)
   #:export (guile-pstk)
   #:export (guile-raylib))
 
@@ -86,7 +86,7 @@
       (native-inputs (list pkg-config glfw-3.4 wayland))
       (inputs (list guile-3.0
                     guile-lib))
-      (propagated-inputs (list raylib-5.5))
+      (propagated-inputs (list raylib))
       (outputs '("out" "examples"))
       (arguments
        `(#:make-flags '("GUILE_AUTO_COMPILE=0")
@@ -108,7 +108,7 @@
                                                          #\-)))
                      (raylib-xml (string-append
                                   (assoc-ref inputs "raylib")
-                                  "/parser/output/raylib_api.xml")))
+                                  "/share/raylib/raylib_api.xml")))
                  (copy-file raylib-xml "raylib_api.xml")
                  #t)))
 
