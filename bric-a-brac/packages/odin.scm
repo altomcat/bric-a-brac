@@ -38,6 +38,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages commencement)
   ;;
   #:use-module (gnu packages freedesktop)
@@ -137,6 +138,7 @@
                             (glfw-lib-out (string-append #$output "/vendor/glfw/lib/"))
                             (stb-libs-out (string-append #$output "/vendor/stb/lib"))
                             (cgltf-lib-out (string-append #$output "/vendor/cgltf/lib"))
+                            (liblz4-lib-out (string-append #$output "/vendor/compress/lz4/lib"))
                             (box2d-avx2-lib (string-append #$box2d-avx2+static
                                                            "/lib/libbox2d.a"))
                             (box2d-simd-lib (string-append #$box2d-simd+static
@@ -146,7 +148,8 @@
                             (raylib-shared-lib (string-append #$raylib-for-odin "/lib"))
                             (glfw-lib (string-append #$glfw+static "/lib/libglfw3.a"))
                             (stb-libs (string-append (getcwd) "/vendor/stb/lib"))
-                            (cgltf-lib (string-append (getcwd) "/vendor/cgltf/lib/cgltf.a")))
+                            (cgltf-lib (string-append (getcwd) "/vendor/cgltf/lib/cgltf.a"))
+                            (liblz4-lib (string-append #$lz4:static "/lib/liblz4.a")))
                        (cond
                         ((string-prefix? "x86_64-linux" target-system)
                          (copy-file box2d-avx2-lib (string-append box2d-lib-out
@@ -159,7 +162,8 @@
                          (install-file cgltf-lib cgltf-lib-out)
                          (install-file raylib-lib raylib-lib-out)
                          (copy-recursively raylib-shared-lib raylib-lib-out)
-                         (install-file glfw-lib glfw-lib-out))
+                         (install-file glfw-lib glfw-lib-out)
+                         (install-file liblz4-lib liblz4-lib-out))
                         (else
                          '())))
                      #t))
@@ -182,7 +186,8 @@
              box2d-simd+static
              glfw+static
              raylib-for-odin
-             raylib-for-odin+static))
+             raylib-for-odin+static
+             lz4))
       (inputs
        (list clang-toolchain-18
              wayland
