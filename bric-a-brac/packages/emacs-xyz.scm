@@ -91,26 +91,24 @@ code written in the Odin programming language.")
    (license license:gpl3)))
 
 (define emacs-miasma-theme
-  (let ((commit "251408da3b7243035c773c5c299353ab36bd2ec0")
-        (revision "0"))
-    (package
-     (name "emacs-miasma-theme")
-     (version (git-version "1.3" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-	     (url "https://github.com/daut/miasma-theme.el")
-	     (commit commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0pb2caf4bj1aynj8mf1cy5syw0v3bf8xjxv78krpa6h9j3zpy7nb"))))
-     (build-system emacs-build-system)
-     (home-page "https://github.com/daut/miasma-theme.el")
-     (synopsis "Miasma theme for Emacs")
-     (description
-      "Miasma is a dark color theme for Emacs inspired by the woods. It is mostly a direct port of Miasma theme for @samp{vim} editor.")
-     (license license:gpl3))))
+  (package
+    (name "emacs-miasma-theme")
+    (version "1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/daut/miasma-theme.el")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0pb2caf4bj1aynj8mf1cy5syw0v3bf8xjxv78krpa6h9j3zpy7nb"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/daut/miasma-theme.el")
+    (synopsis "Miasma theme for Emacs")
+    (description
+     "Miasma is a dark color theme for Emacs inspired by the woods. It is
+mostly a direct port of Miasma theme for @samp{vim} editor.")
+    (license license:gpl3)))
 
 (define emacs-substitute
   (package
