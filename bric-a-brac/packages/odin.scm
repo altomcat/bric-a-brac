@@ -248,7 +248,7 @@ includes the Odin compiler and standard library for building and running Odin pr
 ;; GLFW-3.4 shared library.
 (define raylib-for-odin
   (package
-   (inherit raylib-5.5)
+   (inherit raylib)
    (name "raylib-for-odin")))
 
 ;; (define raylib-for-odin
@@ -276,7 +276,7 @@ includes the Odin compiler and standard library for building and running Odin pr
 ;; Add `mesa' package to be able to use X11 backend only.
 ;; EDIT for wayland : add `wayland', `libxkbcommon' and `glfw@3.4'
 (define raylib-for-odin+static
-  (let ((inherit-from-pkg raylib-5.5))
+  (let ((inherit-from-pkg raylib))
     (package
       (inherit inherit-from-pkg)
       (name "raylib-for-odin+static")
