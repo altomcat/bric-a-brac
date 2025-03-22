@@ -5,7 +5,7 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2024/08/11
-;; Version: 0.0.2
+;; Version: 0.0.3
 
 ;; This file is part of GNU Emacs.
 
@@ -40,7 +40,8 @@
   #:export (emacs-miasma-theme)
   #:export (emacs-odin-mode)
   #:export (emacs-odin-ts-mode)
-  #:export (emacs-flycheck-odin))
+  #:export (emacs-flycheck-odin)
+  #:export (emacs-ace-window-next))
 
 (define emacs-odin-mode
   (let ((commit "65134ecf10ffc4893ca60432b979a23c5ac9a3f1")
@@ -195,6 +196,23 @@ for editing Odin programming files. According to the author, this
 is still a work-in-progress.")
      (license license:expat))))
 
+(define emacs-ace-window-next
+  (let ((commit "77115afc1b0b9f633084cf7479c767988106c196")
+        (revision "0"))
+    (package
+      (inherit emacs-ace-window)
+      (name "emacs-ace-window")
+      (version (git-version "0.10" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/abo-abo/ace-window.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1l6rp92q4crahx9nq7s6zxqyw7ccrhkl95v70vxra7zndqpqwsbq")))))))
+
 (define emacs-flycheck-odin
   (let ((commit "44147e3baccadf36d5403f470fab92ff433ba131")
         (revision "0"))
@@ -239,3 +257,4 @@ is still a work-in-progress.")
 ;; emacs-odin-mode
 ;; emacs-odin-ts-mode
 ;; emacs-flycheck-odin
+;; emacs-ace-window-next
