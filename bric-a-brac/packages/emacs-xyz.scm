@@ -94,15 +94,15 @@ code written in the Odin programming language.")
 (define emacs-miasma-theme
   (package
     (name "emacs-miasma-theme")
-    (version "1.6")
+    (version "1.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/daut/miasma-theme.el")
-                    (commit version)))
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0pb2caf4bj1aynj8mf1cy5syw0v3bf8xjxv78krpa6h9j3zpy7nb"))))
+               (base32 "07fci5vli5d8m607v0v6q535gnmcf4aqyw7020pzq0d7ij4vwacj"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/daut/miasma-theme.el")
     (synopsis "Miasma theme for Emacs")
