@@ -201,7 +201,7 @@ is still a work-in-progress.")
         (revision "0"))
     (package
       (inherit emacs-ace-window)
-      (name "emacs-ace-window")
+      (name "emacs-ace-window-next")
       (version (git-version "0.10" revision commit))
       (source
        (origin
