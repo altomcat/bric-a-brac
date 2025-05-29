@@ -53,8 +53,8 @@
   #:export (odin))
 
 (define odin
-  (let ((commit "584fdc0d4ab9dcc01e218e499fdaef9969223d65")
-        (revision "dev-2025-02"))
+  (let ((commit "d9f990d42e2a1bccf3e7be8ba02efa6504e9af9b")
+        (revision "dev-2025-04"))
     (package
       (name "odin")
       (version (git-version "0.0" revision commit))
@@ -72,7 +72,7 @@
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "12y4rjssfryyyjxkkjnx32363xf6nmd6hnxgbl235z487jla9ag0"))
+                 "0sfgbw4m4a10yvbwqpia7jwff8rlbjb16kkzvnr04xld0qrbnl3m"))
                (modules '((guix build utils)))
                (snippet
                 '(begin
@@ -195,7 +195,7 @@
              glfw-3.4
              mesa
              bash-minimal))
-      (home-page "https://github.com/nakst/gf")
+      (home-page "https://odin-lang.org")
       (synopsis "A modern, fast, and simple systems programming language")
       (description
        "The Odin programming language is a modern systems language focused on simplicity,
@@ -301,4 +301,4 @@ includes the Odin compiler and standard library for building and running Odin pr
 ;; raylib-for-odin+static
 ;; box2d-simd+static
 ;; box2d-avx2+static
-;; odin
+odin
