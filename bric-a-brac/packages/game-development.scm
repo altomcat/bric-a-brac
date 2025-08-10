@@ -39,31 +39,23 @@
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages gl))
+  #:use-module (gnu packages gl)
+  #:export (box2d-3.1))
 
-;; (define box2d-3
-;;   (package
-;;    (inherit box2d)
-;;    (name "box2d")
-;;    (version "3.0.0")
-;;    (source
-;;     (origin
-;;      (method git-fetch)
-;;      (uri (git-reference
-;;            (url "https://github.com/erincatto/box2d")
-;;            (commit (string-append "v" version))))
-;;      (file-name (git-file-name name version))
-;;      (sha256
-;;       (base32 "0m01c23mxvg96zypqyi2fpkd1dsvgflafi3ncga6ihdvxbwaybk5"))))
-;;    (build-system cmake-build-system)
-;;    (arguments
-;;     (substitute-keyword-arguments
-;;         (package-arguments box2d)
-;;       ((#:test-target _) "")
-;;       ((#:configure-flags original-flags)
-;;        `(cons* "-DBOX2D_UNIT_TESTS=OFF"
-;;                "-DBOX2D_SAMPLES=OFF"
-;;                (delete "-DBOX2D_BUILD_TESTBED=OFF" ,original-flags)))))))
+(define-public box2d-3.1
+  (package
+   (inherit box2d-3)
+   (name "box2d")
+   (version "3.1.1")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/erincatto/box2d")
+           (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32 "0j4vf19idnimpf8niqiw9dmdm40mvvjrhky63yyv2n0z1zs35912"))))))
 
 (define raylib-5.5
   (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
@@ -81,7 +73,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "08ywy0lrcmpjyahkap5i10wcx49cc145rhjb9n0yap0xqh3vizfg"))))
+                  "0m01c23mxvg96zypqyi2fpkd1dsvgflafi3ncga6ihdvxbwaybk5"))))
       (arguments
        (substitute-keyword-arguments (package-arguments raylib)
          ((#:phases current-phases)
@@ -96,4 +88,4 @@
 
 ;; Uncommnent to install with `guix package -f raylib-5.5'
 ;; raylib-5.5
-;; box2d-3
+;; box2d-3.1
