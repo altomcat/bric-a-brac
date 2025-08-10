@@ -53,8 +53,8 @@
   #:export (odin))
 
 (define odin
-  (let ((commit "d9f990d42e2a1bccf3e7be8ba02efa6504e9af9b")
-        (revision "dev-2025-04"))
+  (let ((commit "accdd7c2af4c2b9f4a0b923a47df4c2eb6074b0a")
+        (revision "dev-2025-08"))
     (package
       (name "odin")
       (version (git-version "0.0" revision commit))
@@ -67,12 +67,12 @@
              (origin
                (method git-fetch)
                (uri (git-reference
-                     (url "https://github.com/odin-lang/Odin.git")
-                     (commit commit)))
+                      (url "https://github.com/odin-lang/Odin.git")
+                      (commit commit)))
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "0sfgbw4m4a10yvbwqpia7jwff8rlbjb16kkzvnr04xld0qrbnl3m"))
+                 "0fax0fbl0gyhbpd576xbzmx36ynwfmgysigbn73nz267b4qbkink"))
                (modules '((guix build utils)))
                (snippet
                 '(begin
@@ -90,25 +90,20 @@
                  (delete 'configure)
                  (replace 'build
                    (lambda _
-                     ;; FIXME: how to avoid the usage of patchelf
+                     ;; Workaround to avoid the crash of the demo
                      (substitute* "build_odin.sh"
                        (("\\./odin run examples.*" all)
-                        (format #f "~a ~a    ~a~%"
+                        (format #f "~a ~a~%"
                                 "LD_PRELOAD=libgcc_s.so.1"
-                                all
-                                "patchelf --add-needed libgcc_s.so.1 ./demo")))
+                                all)))
                      (invoke "./build_odin.sh")
                      #t))
                  (replace 'install
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let* ((odin "odin")
-                            (demo "demo")
-                            (demo-odin (string-append  demo "-" odin))
                             (sources '("/base" "/core" "/vendor"))
                             (bin (string-append #$output "/bin")))
                        (install-file odin bin)
-                       (rename-file demo demo-odin)
-                       (install-file demo-odin bin)
                        (for-each
                         (lambda (folder)
                           (copy-recursively (string-append #$source folder)
@@ -208,39 +203,45 @@ includes the Odin compiler and standard library for building and running Odin pr
 
 (define box2d-avx2+static
   (package
-    (inherit box2d-3)
+    (inherit box2d-3.1)
     (name "box2d-avx2+static")
     (arguments
-     (substitute-keyword-arguments (package-arguments box2d)
-       ((#:test-target f) "")
+     (substitute-keyword-arguments
+         (package-arguments box2d)
        ((#:configure-flags original-flags)
-        `(cons* "-DBUILD_SHARED_LIBS=OFF"
-                "-DBOX2D_AVX2=ON"
-                "-DBOX2D_UNIT_TESTS=OFF"
-                "-DBOX2D_SAMPLES=OFF"
-                (filter (lambda (flag)
-                          (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
-                                              "-DBOX2D_AVX2=OFF"
-                                              "-DBUILD_SHARED_LIBS=ON"))))
-                        ,original-flags)))))))
+        #~(cons* "-DBUILD_SHARED_LIBS=OFF"
+                 "-DBOX2D_AVX2=ON"
+                 "-DBOX2D_UNIT_TESTS=OFF"
+                 "-DBOX2D_SAMPLES=OFF"
+                 (filter (lambda (flag)
+                           (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
+                                               "-DBOX2D_AVX2=OFF"
+                                               "-DBUILD_SHARED_LIBS=ON"))))
+                         #$original-flags)))
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (delete 'check)))))))
 
 (define box2d-simd+static
   (package
-    (inherit box2d-3)
+    (inherit box2d-3.1)
     (name "box2d-simd+static")
     (arguments
-     (substitute-keyword-arguments (package-arguments box2d)
-       ((#:test-target f) "")
+     (substitute-keyword-arguments
+         (package-arguments box2d)
        ((#:configure-flags original-flags)
-        `(cons* "-DBUILD_SHARED_LIBS=OFF"
-                "-DBOX2D_AVX2=OFF"
-                "-DBOX2D_UNIT_TESTS=OFF"
-                "-DBOX2D_SAMPLES=OFF"
-                (filter (lambda (flag)
-                          (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
-                                              "-DBOX2D_AVX2=ON"
-                                              "-DBUILD_SHARED_LIBS=ON"))))
-                        ,original-flags)))))))
+        #~(cons* "-DBUILD_SHARED_LIBS=OFF"
+                 "-DBOX2D_AVX2=OFF"
+                 "-DBOX2D_UNIT_TESTS=OFF"
+                 "-DBOX2D_SAMPLES=OFF"
+                 (filter (lambda (flag)
+                           (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
+                                               "-DBOX2D_AVX2=ON"
+                                               "-DBUILD_SHARED_LIBS=ON"))))
+                         #$original-flags)))
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (delete 'check)))))))
 
 ;; When using USE_EXTERNAL_GLFW=OFF (default Odin compilation flag) that means
 ;; GLFW is embedded to Raylib, X11 becomes the default backend with my wayland
@@ -248,8 +249,8 @@ includes the Odin compiler and standard library for building and running Odin pr
 ;; GLFW-3.4 shared library.
 (define raylib-for-odin
   (package
-   (inherit raylib)
-   (name "raylib-for-odin")))
+    (inherit raylib)
+    (name "raylib-for-odin")))
 
 ;; (define raylib-for-odin
 ;;   (let ((inherit-from raylib-5.5))
@@ -293,12 +294,12 @@ includes the Odin compiler and standard library for building and running Odin pr
                            #$original-flags)))))
       (native-inputs
        (modify-inputs (package-native-inputs inherit-from-pkg)
-                      (append pkg-config
-                              wayland
-                              libxkbcommon))))))
+         (append pkg-config
+                 wayland
+                 libxkbcommon))))))
 
 ;; Uncomment to install with `guix package -f odin'
 ;; raylib-for-odin+static
-;; box2d-simd+static
-;; box2d-avx2+static
+;;box2d-simd+static
+;;box2d-avx2+static
 odin
