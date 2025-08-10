@@ -155,7 +155,7 @@
                          (copy-file box2d-avx2-lib (string-append box2d-lib-out
                                                                   "box2d_other_amd64_avx2.a"))
                          (copy-file box2d-simd-lib (string-append box2d-lib-out
-                                                                  "box2d_other_amd64_simd.a"))
+                                                                  "box2d_other_amd64_sse2.a"))
                          (for-each (lambda (file)
                                      (install-file file stb-libs-out))
                                    (find-files stb-libs "\\.a$"))
