@@ -43,6 +43,22 @@
   #:export (emacs-flycheck-odin)
   #:export (emacs-ace-window-next))
 
+(define-public emacs-svg-lib-0.2.8
+  (let ((commit "710803c3bea1a25d6d47475c6e1eee734e7144ae"))
+    (package
+      (inherit emacs-svg-lib)
+      (name "emacs-svg-lib")
+      (version "0.2.8")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rougier/svg-lib")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0g8pl725pw4jjalbnjkp9j5iac37xn6q1w1djwdr34pjafc93l50")))))))
+
 (define emacs-odin-mode
   (let ((commit "65134ecf10ffc4893ca60432b979a23c5ac9a3f1")
         (revision "0"))
@@ -258,3 +274,4 @@ is still a work-in-progress.")
 ;; emacs-odin-ts-mode
 ;; emacs-flycheck-odin
 ;; emacs-ace-window-next
+;; emacs-svg-lib-0.2.8
