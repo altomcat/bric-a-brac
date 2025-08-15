@@ -43,8 +43,23 @@
   #:export (emacs-flycheck-odin)
   #:export (emacs-ace-window-next)
   #:export (emacs-svg-lib-0.2.8)
-  #:export (emacs-kind-icon-0.2.2))
+  #:export (emacs-kind-icon-0.2.2)
+  #:export (emacs-simple-httpd-1.4))
 
+(define emacs-simple-httpd-1.4
+  (package
+    (inherit emacs-simple-httpd)
+    (name "emacs-simple-httpd")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/skeeto/emacs-web-server")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05z23nxjkd7wzp9h58ap9hxmgh6kqcsyx0fi7vlh8ny2rdd631r3"))))))
 
 (define emacs-svg-lib-0.2.8
   (let ((commit "710803c3bea1a25d6d47475c6e1eee734e7144ae"))
@@ -286,3 +301,4 @@ is still a work-in-progress.")
 ;; emacs-ace-window-next
 ;; emacs-svg-lib-0.2.8
 ;; emacs-kind-icon-0.2.2
+;; emacs-simple-httpd-1.4
