@@ -41,9 +41,12 @@
   #:export (emacs-odin-mode)
   #:export (emacs-odin-ts-mode)
   #:export (emacs-flycheck-odin)
-  #:export (emacs-ace-window-next))
+  #:export (emacs-ace-window-next)
+  #:export (emacs-svg-lib-0.2.8)
+  #:export (emacs-kind-icon-0.2.2))
 
-(define-public emacs-svg-lib-0.2.8
+
+(define emacs-svg-lib-0.2.8
   (let ((commit "710803c3bea1a25d6d47475c6e1eee734e7144ae"))
     (package
       (inherit emacs-svg-lib)
@@ -58,6 +61,13 @@
          (file-name (git-file-name name version))
          (sha256
           (base32 "0g8pl725pw4jjalbnjkp9j5iac37xn6q1w1djwdr34pjafc93l50")))))))
+
+(define emacs-kind-icon-0.2.2
+  (package
+    (inherit emacs-kind-icon)
+    (name "emacs-kind-icon")
+    (version "0.2.2")
+    (propagated-inputs (list emacs-svg-lib-0.2.8))))
 
 (define emacs-odin-mode
   (let ((commit "65134ecf10ffc4893ca60432b979a23c5ac9a3f1")
@@ -275,3 +285,4 @@ is still a work-in-progress.")
 ;; emacs-flycheck-odin
 ;; emacs-ace-window-next
 ;; emacs-svg-lib-0.2.8
+;; emacs-kind-icon-0.2.2
