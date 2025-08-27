@@ -36,6 +36,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages digest)
@@ -48,6 +49,40 @@
   #:use-module (gnu packages elf)
   #:export (radare2-5.2)
   #:export (radare2-5.9))
+
+(define rizin-0.8
+  (package
+    (inherit rizin)
+    (name "rizin")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rizinorg/rizin/releases/download/v"
+                    version "/rizin-src-v" version ".tar.xz"))
+              (sha256
+               (base32
+                ;;"0dvybjm447c28b5516fb8cya55345j0d21w0j2gjh6cp20kcg6ns"
+                "1hjf180q4ba0cs5ys7vwy5xs1k6195kransj8fn3dp6p4mjiwazg"
+                ))))
+    (native-inputs
+     (modify-inputs (package-native-inputs rizin)
+                    (append cmake pkg-config)))
+    (arguments
+    (substitute-keyword-arguments (package-arguments rizin)
+      ((#:phases phases)
+       #~(modify-phases #$phases
+           (delete 'skip-integration-tests)
+           (add-before 'configure 'skip-integration-tests
+             (lambda _
+               ;; Skip integration tests, which require prebuilt binaries at:
+               ;; <https://github.com/rizinorg/rizin-testbins>.
+               (substitute* "test/meson.build"
+                 (("subdir\\('integration'\\)") ""))
+              ;;; Skip failing tests.
+               (substitute* "test/unit/meson.build"
+                 (("'tokens',\n") ""))))
+           ))))))
 
 
 (define radare2-5.2
