@@ -30,10 +30,13 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix git-download)
+  #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages cmake)
@@ -46,9 +49,43 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages engineering)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages elf)
   #:export (radare2-5.2)
-  #:export (radare2-5.9))
+  #:export (radare2-5.9)
+  #:export (rizin-0.8)
+  #:export (cutter-2.4))
+
+(define cutter-2.4
+  (package
+    (inherit cutter)
+    (name "cutter")
+    (version "2.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rizinorg/cutter")
+             (commit (string-append "v" version))
+             (recursive? #t)))
+       (modules '((guix build utils)))
+       (snippet #~(delete-file-recursively "rizin"))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "090gfg90k0fn3jiyssdigjgb7xn473hxfm7gpl1rwn3kl6fv7lvw"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments cutter)
+       ((#:configure-flags original-flags)
+        #~(cons* "-DCUTTER_ENABLE_PYTHON=ON"
+                 "-DCUTTER_ENABLE_PYTHON_BINDINGS=ON"
+                 #$original-flags))))
+    (inputs
+     (modify-inputs (package-inputs cutter)
+       (replace "rizin" rizin-0.8) ;; use my definition package temporary
+       (replace "qtsvg" qtsvg)
+       (replace "qttools" qttools)
+       (append python qtbase qt5compat libxkbcommon python-pyside-6 ksyntaxhighlighting python-pyside-6 graphviz)))))
 
 (define rizin-0.8
   (package
@@ -83,7 +120,6 @@
                (substitute* "test/unit/meson.build"
                  (("'tokens',\n") ""))))
            ))))))
-
 
 (define radare2-5.2
   (package
@@ -261,6 +297,6 @@ it suitable for security research and analysis.")
 ;; radare2-5.2
 ;; r2-vector35-arch-arm64
 ;; r2-vector35-arch-armv7
-radare2-5.9
+;; radare2-5.9
 ;; rizin-0.8
 ;; cutter-2.4
