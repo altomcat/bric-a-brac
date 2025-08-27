@@ -139,31 +139,31 @@ it suitable for security research and analysis.")
   (let ((commit "f270a6cc99644cb8e76055b6fa632b25abd26024")
         (revision "0"))
     (package
-      (name "vector35-arch-armv7")
-      (version (git-version "0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/radareorg/vector35-arch-armv7.git")
-               ;; (commit "dde39f69ffea19fc37e681874b12cb4707bc4f30")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0sdj311zc2zxrjwhjp91kdyb53fhwgn98p0xirvwxjiwncky05v2"))))
-      (build-system trivial-build-system)
-      (arguments
-       (list #:builder
-             (with-imported-modules '((guix build utils))
-               #~(let ((share (string-append #$output "/arch-armv7/")))
-                   (use-modules (guix build utils))
-                   (mkdir-p share)
-                   (copy-recursively (assoc-ref %build-inputs "source")
-                                     share)))))
-      (home-page "https://github.com/radareorg/vector35-arch-arm64")
-      (synopsis "ARM64 architecture plugin for Binary Ninja")
-      (description "This package only provides the source checkout of vector35-arch-arm64.")
-      (license license:expat))))
+     (name "vector35-arch-armv7")
+     (version (git-version "0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/radareorg/vector35-arch-armv7.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0sdj311zc2zxrjwhjp91kdyb53fhwgn98p0xirvwxjiwncky05v2"))))
+     (build-system trivial-build-system)
+     (arguments
+      (list #:builder
+            (with-imported-modules
+             '((guix build utils))
+             #~(let ((share (string-append #$output "/arch-armv7/")))
+                 (use-modules (guix build utils))
+                 (mkdir-p share)
+                 (copy-recursively (assoc-ref %build-inputs "source")
+                                   share)))))
+     (home-page "https://github.com/radareorg/vector35-arch-arm64")
+     (synopsis "ARM64 architecture plugin for Binary Ninja")
+     (description "This package only provides the source checkout of vector35-arch-arm64.")
+     (license license:expat))))
 
 (define radare2-5.9
   (package
@@ -183,9 +183,7 @@ it suitable for security research and analysis.")
     (arguments
      (substitute-keyword-arguments (package-arguments radare2-5.2)
        ((#:configure-flags original-flags)
-        #~(cons* "--host=linux"
-                 "--with-ostype=gnulinux"
-                 "--with-syscapstone"
+        #~(cons* "--with-syscapstone"
                  "--with-syslz4"
                  "--with-syszip"
                  "--with-compiler=gcc"
@@ -218,12 +216,16 @@ it suitable for security research and analysis.")
                 #t))))))
     (native-inputs
      (modify-inputs (package-native-inputs radare2-5.2)
-                    (append r2-vector35-arch-armv7
-                            r2-vector35-arch-arm64
-                            zlib libzip zip lz4 file patchelf)))))
+                    (append r2-vector35-arch-armv7 r2-vector35-arch-arm64
+                            patchelf)))
+    (inputs
+     (modify-inputs (package-inputs radare2-5.2)
+                    (append zlib libzip zip lz4 file)))))
 
 ;; Uncomment to install with `guix package -f engineering.scm'
 ;; radare2-5.2
 ;; r2-vector35-arch-arm64
 ;; r2-vector35-arch-armv7
 radare2-5.9
+;; rizin-0.8
+;; cutter-2.4
