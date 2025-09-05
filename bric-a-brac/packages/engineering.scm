@@ -56,6 +56,46 @@
   #:export (radare2-5.9)
   #:export (rizin-0.8)
   #:export (cutter-2.4))
+;; RIZIN
+
+(define rzghidra
+  (package
+    (name "rzghidra")
+    (version "0.8.0")
+    (source
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/rizinorg/rz-ghidra.git")
+                   (commit (string-append "v" version))
+                   (recursive? #t)))
+             (sha256
+              (base32
+               "184yf5v30k6yvpb9kjbjzr1rrxc3acg8xqm0c3bjmfy0w6g093dq"))
+             (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:tests? #f
+           #:parallel-build? #f  ; parallel building failed on my WSL2 system
+           #:configure-flags
+           #~(list "-DBUILD_CUTTER_PLUGIN=ON"
+                   (string-append "-DCMAKE_INSTALL_PREFIX=" #$output)
+                   (string-append "-DRIZIN_INSTALL_PLUGDIR=" (string-append #$output "/lib/rizin/plugins"))
+                   (string-append "-DCUTTER_INSTALL_PLUGDIR=" (string-append #$output "/share/rizin/cutter/plugins/native")))))
+    (native-inputs
+     (list pkg-config rizin-0.8 openssl cutter-2.4))
+    (inputs (list
+             qtsvg
+             qttools
+             python
+             qtbase
+             qt5compat
+             libxkbcommon))
+    (home-page "https://radare.org/")
+    (synopsis "Reverse engineering decompiler")
+    (description
+     "Ghidra decompiler for Rizin.")
+    (license license:lgpl3)))
+
 
 (define cutter-2.4
   (package
