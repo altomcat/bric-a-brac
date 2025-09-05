@@ -33,6 +33,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages qt)
@@ -96,6 +97,44 @@
      "Ghidra decompiler for Rizin.")
     (license license:lgpl3)))
 
+(define rizin-0.8
+  (package
+    (inherit rizin)
+    (name "rizin")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rizinorg/rizin/releases/download/v"
+                    version "/rizin-src-v" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hjf180q4ba0cs5ys7vwy5xs1k6195kransj8fn3dp6p4mjiwazg"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments rizin)
+       ((#:configure-flags original-flags)
+        #~(cons* "-Dportable=true" #$original-flags))
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (delete 'skip-integration-tests)
+            (add-before 'configure 'skip-integration-tests
+              (lambda _
+                ;; Skip integration tests, which require prebuilt binaries at:
+                ;; <https://github.com/rizinorg/rizin-testbins>.
+                (substitute* "test/meson.build"
+                  (("subdir\\('integration'\\)") ""))
+                ;; Skip failing tests.
+                (substitute* "test/unit/meson.build"
+                  (("'tokens',\n") ""))
+                ;; Apply a fix similar to Nix's patch for managing plugins
+                (substitute* "librz/util/path.c"
+                  (("char \\*pid_to_path = rz_sys_pid_to_path\\(rz_sys_getpid\\(\\)\\);")
+                   "return rz_sys_getenv(\"GUIX_RZ_PREFIX\");\nchar *pid_to_path = rz_sys_pid_to_path(rz_sys_getpid());"))))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUIX_RZ_PREFIX")
+            (separator #f)
+            (files '("")))))))
 
 (define cutter-2.4
   (package
@@ -134,39 +173,7 @@
        (replace "qttools" qttools)
        (append python qtbase qt5compat libxkbcommon python-pyside-6 ksyntaxhighlighting python-pyside-6 graphviz)))))
 
-(define rizin-0.8
   (package
-    (inherit rizin)
-    (name "rizin")
-    (version "0.8.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rizinorg/rizin/releases/download/v"
-                    version "/rizin-src-v" version ".tar.xz"))
-              (sha256
-               (base32
-                ;;"0dvybjm447c28b5516fb8cya55345j0d21w0j2gjh6cp20kcg6ns"
-                "1hjf180q4ba0cs5ys7vwy5xs1k6195kransj8fn3dp6p4mjiwazg"
-                ))))
-    (native-inputs
-     (modify-inputs (package-native-inputs rizin)
-                    (append cmake pkg-config)))
-    (arguments
-    (substitute-keyword-arguments (package-arguments rizin)
-      ((#:phases phases)
-       #~(modify-phases #$phases
-           (delete 'skip-integration-tests)
-           (add-before 'configure 'skip-integration-tests
-             (lambda _
-               ;; Skip integration tests, which require prebuilt binaries at:
-               ;; <https://github.com/rizinorg/rizin-testbins>.
-               (substitute* "test/meson.build"
-                 (("subdir\\('integration'\\)") ""))
-              ;;; Skip failing tests.
-               (substitute* "test/unit/meson.build"
-                 (("'tokens',\n") ""))))
-           ))))))
 
 (define radare2-5.2
   (package
