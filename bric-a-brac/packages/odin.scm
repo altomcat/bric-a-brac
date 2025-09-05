@@ -52,6 +52,12 @@
   #:use-module (bric-a-brac packages gl)
   #:export (odin))
 
+;; Notes for myself:
+;;
+;; When building with Odin, one can append the flag -extra-linker-flags:"-Wl,-rpath,/path/one:/path/two
+;; to the build command in order to avoid the laster use of patchelf
+;; It will link the executable with the needed libraries.
+
 (define odin
   (let ((commit "accdd7c2af4c2b9f4a0b923a47df4c2eb6074b0a")
         (revision "dev-2025-08"))
@@ -176,7 +182,6 @@
        (list llvm-18
              clang-toolchain-18
              which
-             patchelf
              box2d-avx2+static
              box2d-simd+static
              glfw+static
