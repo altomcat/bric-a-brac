@@ -21,7 +21,8 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; My best effort to release an up-to-date package definition for Radare2
+;;; My best effort to release an up-to-date package definition for Radare2,
+;;; Rizin and Cutter
 
 
 (define-module (bric-a-brac packages engineering)
@@ -53,11 +54,16 @@
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages xml)
   #:export (radare2-5.2)
   #:export (radare2-5.9)
   #:export (rizin-0.8)
-  #:export (cutter-2.4))
+  #:export (cutter-2.4)
+  #:export (rzghidra))
+
+
 ;; RIZIN
+;;
 
 (define rzghidra
   (package
