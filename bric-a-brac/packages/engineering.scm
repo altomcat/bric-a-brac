@@ -69,17 +69,24 @@
              (url "https://github.com/rizinorg/cutter")
              (commit (string-append "v" version))
              (recursive? #t)))
-       (modules '((guix build utils)))
-       (snippet #~(delete-file-recursively "rizin"))
        (file-name (git-file-name name version))
        (sha256
         (base32 "090gfg90k0fn3jiyssdigjgb7xn473hxfm7gpl1rwn3kl6fv7lvw"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments cutter)
-       ((#:configure-flags original-flags)
-        #~(cons* "-DCUTTER_ENABLE_PYTHON=ON"
-                 "-DCUTTER_ENABLE_PYTHON_BINDINGS=ON"
-                 #$original-flags))))
+     (list #:tests? #f
+           #:configure-flags
+           #~(list "-DCUTTER_USE_BUNDLED_RIZIN=OFF"
+                   "-DCUTTER_ENABLE_PYTHON=ON"
+                   "-DCUTTER_ENABLE_PYTHON_BINDINGS=ON")
+           #:phases
+           #~(modify-phases %standard-phases
+             (add-after 'unpack 'patch-location
+               (lambda _
+                   (substitute*
+                       "src/plugins/PluginManager.cpp"
+                     (("QString location = QStandardPaths::writableLocation\\(QStandardPaths::AppDataLocation\\);")
+                      (string-append "return QString::fromUtf8(std::getenv(\"GUIX_RZ_PREFIX\"))+\"/share/rizin/cutter/plugins/\";\n"
+                                     "QString location = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);"))))))))
     (inputs
      (modify-inputs (package-inputs cutter)
        (replace "rizin" rizin-0.8) ;; use my definition package temporary
