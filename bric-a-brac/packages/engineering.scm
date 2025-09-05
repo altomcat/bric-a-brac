@@ -173,7 +173,86 @@
        (replace "qttools" qttools)
        (append python qtbase qt5compat libxkbcommon python-pyside-6 ksyntaxhighlighting python-pyside-6 graphviz)))))
 
+;; RADARE2
+
+(define r2ghidra
   (package
+   (name "r2ghidra")
+   (version "6.0.0")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/radareorg/r2ghidra.git")
+                  (commit version)
+                  (recursive? #t)))
+            (sha256
+             (base32
+              "0kbzyd5jmxbcwv3zqzwakc46l17bpzlx2syh15hfi9vyncci9sms"))
+            (file-name (git-file-name name version))))
+   (build-system meson-build-system)
+   (arguments
+    (list #:phases
+          #~(modify-phases %standard-phases
+                           (add-before 'configure 'patch-meson-build
+                                       (lambda* (#:key inputs #:allow-other-keys)
+                                         (let* ((path "./subprojects")
+                                                (meson-build-file (string-append path "/packagefiles/ghidra-native/meson.build"))
+                                                (patches "./subprojects/ghidra-native"))
+                                           ;; (substitute* "configure.acr"
+                                           ;;   (("CHKPRG! GIT git") ""))
+                                           ;; (substitute* "meson.build"
+                                           ;;   (("pugixml_sources = \\[\n") "")
+                                           ;;   (("'third-party/pugixml/src/pugixml\\.cpp'\n") "#")
+                                           ;;   (("'third-party/pugixml/src/',\n") "")
+                                           ;;   (("pugixml_sources,\n") "")
+                                           ;;   (("ghidra = subproject\\('ghidra-native', default_options: \\['default_library=static', 'werror=false'\\]\\)") "ghidra = dependency('ghidra-native')"))
+                                           (substitute* "subprojects/Makefile"
+                                                        (("WRAP_wrap_git_url:=https://github.com/radareorg/ghidra-native\n") "")
+                                                        (("WRAP_wrap_git_revision:=d2242691bf45a12e3ea483a4789f825af4651506\n") ""))
+                                           (substitute* "subprojects/ghidra-native.mk"
+                                                        (("git clone --no-checkout --depth=1 https://github.com/radareorg/ghidra-native ghidra-native") "")
+                                                        (("cd ghidra-native && git fetch --depth=1 origin d2242691bf45a12e3ea483a4789f825af4651506") ""))
+                                           (substitute* "subprojects/ghidra-native.wrap"
+                                                        (("wrap-git") "wrap-file"))
+                                           ;; (delete-file "subprojects/ghidra-native.wrap")
+                                           ;; replace with the repository from inputs
+                                           (copy-recursively #$ghidra-native path)
+                                           (copy-file meson-build-file (string-append patches "/meson.build"))
+
+                                           (display "========8<======== PATCH ==============\n")
+                                           ;;(system* #$(file-append coreutils "/bin/ls") path)
+                                           (with-directory-excursion patches
+                                                                     (let ((patches
+                                                                            (list "patches/0001-space-after-comma.patch"
+                                                                                  "patches/0002-make-sleigharch-public.patch"
+                                                                                  "patches/0004-public-fields.patch"
+                                                                                  "patches/0006-readonly-warning.patch"
+                                                                                  "patches/0010-null-subflow.patch"
+                                                                                  "patches/0020-Fix-double-free-crash-when-deinitializing-multiple-X.patch"
+                                                                                  "patches/0023-Undef-LoadImage-for-windows.patch"
+                                                                                  "patches/0024-ignore-symbol-beyond-space.patch"
+                                                                                  "patches/0044-bad-unicode-codepoint.patch"
+                                                                                  "patches/0055-datatype-clone.patch"
+                                                                                  "patches/0056-nullderef-workaround.patch"
+                                                                                  "patches/0080-getparent-flow.patch"
+                                                                                  "patches/0090-nocasts-warnings.patch"
+                                                                                  "patches/0091-decompiler-xml-packer.patch"
+                                                                                  "patches/0092-badvar-segfault.patch"
+                                                                                  "patches/0093-no-virtual-destructor.patch")))
+                                                                       (map (lambda (p)
+                                                                              (invoke #$(file-append patch "/bin/patch") "-p1" "-i" p))
+                                                                            patches)))
+                                           (display "========8<======== DONE ==============\n")
+                                           ))))))
+   (native-inputs
+    (list pkg-config cmake zlib ghidra-native radare2 pugixml openssl))
+   (inputs
+    (list pugixml openssl radare2))
+   (home-page "https://radare.org/")
+   (synopsis "Reverse engineering decompiler")
+   (description
+    "Ghidra decompiler for Radare2.")
+   (license license:lgpl3)))
 
 (define radare2-5.2
   (package
