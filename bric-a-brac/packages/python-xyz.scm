@@ -5,6 +5,7 @@
   #:use-module (guix build-system pyproject)
   #:use-module (guix git-download)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages libffi)
@@ -13,7 +14,42 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages python-web)
- #:export (python-obsws-python))
+  #:use-module (bric-a-brac packages antivirus)
+  #:export (python-obsws-python)
+  #:export (python-yara))
+
+(define python-yara
+  (package
+    (name "python-yara")
+    (version "4.5.4")
+    (source
+     (origin (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/VirusTotal/yara-python.git")
+                    (commit (string-append "v" version))))
+             (sha256
+              (base32 "0w65c8ha05s9fzibbzijl90wgdwylg0vr9jw8d9s7s7q8jk0p76r"))))
+    (build-system python-build-system)
+    (arguments
+     (list #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'git-clone-yara
+                 (lambda* _
+                   (copy-recursively #$(origin
+                                         (method git-fetch)
+                                         (uri (git-reference
+                                                (url "https://github.com/VirusTotal/yara")
+                                                (commit (string-append "v" version))))
+                                         (sha256
+                                          (base32 "01sgnh6m6bprmakagxqr2w960p81qwxgfn7c21isw2qv9hzj6b5x")))
+                                     "./yara"))))))
+    (inputs (list yara-4.5))
+    (home-page "https://github.com/VirusTotal/yara-python")
+    (synopsis "The Python interface for YARA")
+    (description
+     "This package provides a Python interface for YARA.")
+    (license license:asl2.0)))
 
 ;; This definition package has been created with guix import
 (define python-obsws-python
@@ -88,4 +124,5 @@ virtualization library.")
 
 ;; Uncomment to install with `guix package -f python-obsws-python'
 ;; python-libvirt
-python-obsws-python
+;; python-obsws-python
+python-yara
