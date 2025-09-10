@@ -16,7 +16,24 @@
   #:use-module (gnu packages python-web)
   #:use-module (bric-a-brac packages antivirus)
   #:export (python-obsws-python)
-  #:export (python-yara))
+  #:export (python-yara)
+  #:export (python-pefile-2024.8.26))
+
+(define python-pefile-2024.8.26
+  (package
+    (inherit python-pefile)
+    (name "python-pefile")
+    (version "2024.8.26")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/erocarrera/pefile")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "14bh23b7jipf2pxjivyn2khifal6fmk0pjsddrd3h1gd9n0wl9zd"))))))
+
 
 (define python-yara
   (package
@@ -125,4 +142,5 @@ virtualization library.")
 ;; Uncomment to install with `guix package -f python-obsws-python'
 ;; python-libvirt
 ;; python-obsws-python
-python-yara
+;; python-yara
+;; python-pefile-2024.8.26
