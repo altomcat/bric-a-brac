@@ -7,6 +7,7 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages check)
@@ -60,7 +61,12 @@
                                                 (commit (string-append "v" version))))
                                          (sha256
                                           (base32 "01sgnh6m6bprmakagxqr2w960p81qwxgfn7c21isw2qv9hzj6b5x")))
-                                     "./yara"))))))
+                                     "./yara")))
+               (replace 'build
+                 (lambda* (#:key python #:allow-other-keys)
+                   (invoke (string-append #$python "/bin/python3")
+                           "setup.py" "build" "--dynamic-link")))
+               )))
     (inputs (list yara-4.5))
     (home-page "https://github.com/VirusTotal/yara-python")
     (synopsis "The Python interface for YARA")
