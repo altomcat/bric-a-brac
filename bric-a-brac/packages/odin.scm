@@ -55,12 +55,12 @@
 ;; Notes for myself:
 ;;
 ;; When building with Odin, one can append the flag -extra-linker-flags:"-Wl,-rpath,/path/one:/path/two
-;; to the build command in order to avoid the laster use of patchelf
+;; to the build command in order to avoid the later use of patchelf
 ;; It will link the executable with the needed libraries.
 
 (define odin
-  (let ((commit "accdd7c2af4c2b9f4a0b923a47df4c2eb6074b0a")
-        (revision "dev-2025-08"))
+  (let ((commit "42c2cb89b580acc228a5e54988b40cf56f99c95f")
+        (revision "dev-2025-09"))
     (package
       (name "odin")
       (version (git-version "0.0" revision commit))
@@ -78,7 +78,7 @@
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "0fax0fbl0gyhbpd576xbzmx36ynwfmgysigbn73nz267b4qbkink"))
+                 "1hbyb4cqvs10ymf8jl2szz3v6jfm3cwcqrk8nrcjpirkq4sa05rz"))
                (modules '((guix build utils)))
                (snippet
                 '(begin
