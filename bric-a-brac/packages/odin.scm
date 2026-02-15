@@ -5,7 +5,6 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2025/01/16
-;; Version: 0.0.2
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -59,8 +58,8 @@
 ;; It will link the executable with the needed libraries.
 
 (define odin
-  (let ((commit "42c2cb89b580acc228a5e54988b40cf56f99c95f")
-        (revision "dev-2025-09"))
+  (let ((commit "b942f72cb085f79b214a596c0628984298358eaa")
+        (revision "dev-2026-02"))
     (package
       (name "odin")
       (version (git-version "0.0" revision commit))
@@ -78,7 +77,7 @@
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "1hbyb4cqvs10ymf8jl2szz3v6jfm3cwcqrk8nrcjpirkq4sa05rz"))
+                 "0hdw6m67n9v8g1xp87c0hppd8slh5h5bb4sp6j22rkcpb4acf9af"))
                (modules '((guix build utils)))
                (snippet
                 '(begin
@@ -171,11 +170,13 @@
                  (add-after 'install 'wrap-odin
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let* ((bin (string-append #$output "/bin/odin"))
+                            (raylib-lib (string-append #$output "/vendor/raylib/linux"))
                             (llvm-lib (string-append #$llvm "/lib"))
                             (clang-lib (string-append #$clang-toolchain "/lib")))
                        (wrap-program bin
                          `("ODIN_ROOT" = (,#$output))
-                         `("LD_LIBRARY_PATH" = (,llvm-lib
+                         `("LD_LIBRARY_PATH" = (,raylib-lib
+                                                ,llvm-lib
                                                 ,clang-lib))))
                      #t)))))
       (native-inputs
@@ -307,4 +308,4 @@ includes the Odin compiler and standard library for building and running Odin pr
 ;; raylib-for-odin+static
 ;;box2d-simd+static
 ;;box2d-avx2+static
-odin
+;;odin
