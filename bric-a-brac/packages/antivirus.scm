@@ -107,3 +107,4 @@
 
 ;; Uncomment to install with `guix package -f antivirus.scm'
 ;; yara-4.5
+;; cutter-hyara
