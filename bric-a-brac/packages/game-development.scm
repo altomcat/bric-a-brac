@@ -36,13 +36,53 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix gexp)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages gl)
-  #:export (box2d-3.1))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages ncurses)
+  #:export (box2d-3.1)
+  #:export (glslviewer))
 
-(define-public box2d-3.1
+
+(define glslviewer
+  (package
+    (name "glslviewer")
+    (version "3.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/patriciogonzalezvivo/glslViewer.git")
+             (commit version)
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1353cbl6g7lwvn68wwkksijahsg66yrjcfrmcmzawfcw425r7y5d"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:tests? #f))
+    (native-inputs
+     (list pkg-config ncurses python coreutils))
+    (inputs
+     (list glfw mesa ffmpeg))
+    (synopsis "Interactive GLSL sandbox and shader viewer")
+    (description
+     "glslViewer is an interactive sandbox for rendering GLSL shaders.
+It provides a lightweight windowed environment for experimenting
+with fragment shaders, similar to Shadertoy-style workflows but
+running locally. The program supports real-time editing, automatic
+reloading of shader files, and a minimal runtime for testing visual
+effects without requiring a full graphics engine or application
+framework.")
+    (home-page "https://github.com/patriciogonzalezvivo/")
+    (license (list license:expat))))
+
+(define box2d-3.1
   (package
    (inherit box2d-3)
    (name "box2d")
@@ -89,3 +129,5 @@
 ;; Uncommnent to install with `guix package -f raylib-5.5'
 ;; raylib-5.5
 ;; box2d-3.1
+;; live-glsl
+;; glslviewer
