@@ -5,7 +5,6 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintainer: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2025-08-27
-;; Version: 0.0.1
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -94,7 +93,7 @@
   (package
     (inherit yara)
     (name "yara")
-    (version "4.5.4")
+    (version "4.5.5")
     (source
      (origin
        (method git-fetch)
@@ -103,7 +102,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01sgnh6m6bprmakagxqr2w960p81qwxgfn7c21isw2qv9hzj6b5x"))))))
+        (base32 "16f8pkadyi6m8vp63hfs5634b6gix3ry9g5n7bkklx30ab2hpskb"))))))
 
 ;; Uncomment to install with `guix package -f antivirus.scm'
 ;; yara-4.5
