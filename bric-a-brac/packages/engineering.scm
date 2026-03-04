@@ -1,9 +1,9 @@
-;;; engineering.scm --  -*- lexical-binding: t -*-
+;;; engineering.scm
 
 ;; Copyright (C) 2025 Free Software Foundation, Inc.
 
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
-;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
+;; Maintainer: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2025/08/21
 ;; Version:
 
@@ -23,7 +23,9 @@
 ;;; Commentary:
 ;;; My best effort to release an up-to-date package definition for Radare2,
 ;;; Rizin and Cutter
+;;; With Wayland, you may need to install `qtwayland' in addition to `Cutter'
 
+;;; Code
 
 (define-module (bric-a-brac packages engineering)
   #:use-module ((guix licenses) #:prefix license:)
@@ -107,7 +109,7 @@
   (package
     (inherit rizin)
     (name "rizin")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -115,7 +117,7 @@
                     version "/rizin-src-v" version ".tar.xz"))
               (sha256
                (base32
-                "1hjf180q4ba0cs5ys7vwy5xs1k6195kransj8fn3dp6p4mjiwazg"))))
+                "159ddi96mlqdynixy3h831dip59gr2gnj85jgvrjyvz8p99clc0n"))))
     (arguments
      (substitute-keyword-arguments (package-arguments rizin)
        ((#:configure-flags original-flags)
@@ -349,31 +351,31 @@ it suitable for security research and analysis.")
   (let ((commit "f270a6cc99644cb8e76055b6fa632b25abd26024")
         (revision "0"))
     (package
-     (name "vector35-arch-armv7")
-     (version (git-version "0.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/radareorg/vector35-arch-armv7.git")
-             (commit commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0sdj311zc2zxrjwhjp91kdyb53fhwgn98p0xirvwxjiwncky05v2"))))
-     (build-system trivial-build-system)
-     (arguments
-      (list #:builder
-            (with-imported-modules
-             '((guix build utils))
-             #~(let ((share (string-append #$output "/arch-armv7/")))
-                 (use-modules (guix build utils))
-                 (mkdir-p share)
-                 (copy-recursively (assoc-ref %build-inputs "source")
-                                   share)))))
-     (home-page "https://github.com/radareorg/vector35-arch-arm64")
-     (synopsis "ARM64 architecture plugin for Binary Ninja")
-     (description "This package only provides the source checkout of vector35-arch-arm64.")
-     (license license:expat))))
+      (name "vector35-arch-armv7")
+      (version (git-version "0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/radareorg/vector35-arch-armv7.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0sdj311zc2zxrjwhjp91kdyb53fhwgn98p0xirvwxjiwncky05v2"))))
+      (build-system trivial-build-system)
+      (arguments
+       (list #:builder
+             (with-imported-modules
+                 '((guix build utils))
+               #~(let ((share (string-append #$output "/arch-armv7/")))
+                   (use-modules (guix build utils))
+                   (mkdir-p share)
+                   (copy-recursively (assoc-ref %build-inputs "source")
+                                     share)))))
+      (home-page "https://github.com/radareorg/vector35-arch-arm64")
+      (synopsis "ARM64 architecture plugin for Binary Ninja")
+      (description "This package only provides the source checkout of vector35-arch-arm64.")
+      (license license:expat))))
 
 (define radare2-5.9
   (package
