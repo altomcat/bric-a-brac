@@ -79,7 +79,7 @@
                ("Hyara_Cutter.py" "share/rizin/cutter/plugins/python/hyara/")
                ("hyara_lib" "share/rizin/cutter/plugins/python/hyara/"))))
     (propagated-inputs
-      (list python-yara python-pillow python-pyside-6 python-pefile))
+      (list python python-yara python-pillow python-pyside-6 python-pefile))
      (search-paths
       (list (search-path-specification
               (variable "GUIX_RZ_PREFIX")
