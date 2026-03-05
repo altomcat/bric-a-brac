@@ -42,6 +42,7 @@
   #:use-module (gnu packages compression)
   #:use-module (bric-a-brac packages documentation)
   #:export (glfw+static)
+  #:export (glbinding)
   )
 
 (define glfw+static
@@ -56,4 +57,32 @@
                  (delete "-DBUILD_SHARED_LIBS=ON"
                          #$original-flags)))))))
 
+(define glbinding
+  (package
+    (name "glbinding")
+    (version "3.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cginternals/glbinding.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0iskvrdhmvh1522v6444z6jdcc14gpwzdz4gmmygv5yz4nr4xfx0"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:tests? #f))                ;no test
+    (home-page "https://github.com/cginternals/glbinding")
+    (synopsis "Modern C++11 OpenGL binding")
+    (description
+     "glbinding is a modern C++11 binding for the OpenGL API. It provides
+ type-safe function wrappers, strongly typed enumerations, and automatic
+ extension handling generated from the official OpenGL specification.
+ It is suitable for graphics engines and other OpenGL-based applications.")
+    (license license:expat)))
+
+
+
 ;; glfw+static
+glbinding
