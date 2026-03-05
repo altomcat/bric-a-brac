@@ -31,9 +31,16 @@
   #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system emacs)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages ninja)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages commencement)
+  #:use-module (gnu packages gl)
+  #:use-module (bric-a-brac packages gl)
   ;; #:export (emacs-substitute)
   ;; #:export (emacs-consult-denote)
   #:export (emacs-hasliberg-theme)
@@ -44,7 +51,29 @@
   #:export (emacs-ace-window-next)
   #:export (emacs-svg-lib-0.2.8)
   #:export (emacs-kind-icon-0.2.2)
-  #:export (emacs-simple-httpd-1.4))
+  #:export (emacs-simple-httpd-1.4)
+  #:export (emacs-ob-glsl)
+  #:export (emacs-copilot))
+
+(define emacs-copilot-0.4
+  (let ((commit "7904f13d52e8dcda3af67142c42fa7c8345ba6fe"))
+    (package
+      (name "emacs-copilot")
+      (version "0.4.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/copilot-emacs/copilot.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1v197qvi8m074ln005r74i7036imlcpm7nmxpzcvin87nfk0agrs"))))
+    (build-system emacs-build-system)
+    (synopsis "Emacs copilot")
+    (description "Emacs copilot")
+    (home-page "https://github.com/copilot-emacs/copilot.el")
+    (license license:expat))))
 
 (define emacs-simple-httpd-1.4
   (package
@@ -302,3 +331,5 @@ is still a work-in-progress.")
 ;; emacs-svg-lib-0.2.8
 ;; emacs-kind-icon-0.2.2
 ;; emacs-simple-httpd-1.4
+;; emacs-ob-glsl
+;; emacs-copilot-0.4
