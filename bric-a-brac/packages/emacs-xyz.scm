@@ -52,8 +52,7 @@
   #:export (emacs-svg-lib-0.2.8)
   #:export (emacs-kind-icon-0.2.2)
   #:export (emacs-simple-httpd-1.4)
-  #:export (emacs-ob-glsl)
-  #:export (emacs-copilot))
+  #:export (emacs-copilot-0.4))
 
 (define emacs-copilot-0.4
   (let ((commit "7904f13d52e8dcda3af67142c42fa7c8345ba6fe"))
