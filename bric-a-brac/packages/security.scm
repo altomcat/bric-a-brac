@@ -32,6 +32,8 @@
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix gexp)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages python-build)
   #:use-module (bric-a-brac packages python-xyz)
   #:export (peepdf)
   )
@@ -71,4 +73,4 @@ JavaScript beautification, object parsing, and decryption of embedded data.")
       (license license:gpl3+))))
 
 ;; Uncomment to install with `guix package -f security.scm'
-;; peepdf
+peepdf
