@@ -54,7 +54,54 @@
   #:export (emacs-simple-httpd-1.4)
   #:export (emacs-copilot-0.4)
   #:export (emacs-copilot-master)
+  #:export (emacs-ob-glsl)
   )
+
+(define emacs-ob-glsl
+  (let ((commit "65148e0596a17e342646e8d1bac465e0ca7f31d0") ; example commit
+        (revision "0"))
+    (package
+      (name "emacs-ob-glsl")
+      (version (git-version "0.0." revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/finalpatch/ob-glsl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1mr02xyvfs3vl2gs4f6x4plq8q1ybrfqzk5s2qqs9916k8qcll23"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       (list pkg-config ninja glbinding gcc-toolchain emacs))
+      (inputs
+       (list sdl2 sdl2-image))
+      (arguments
+       (list
+        #:tests? #f
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'build 'build-elisp
+              (lambda _
+                (copy-file (string-append #$source "/ob-glsl.el") "ob-glsl.el")
+                (invoke "emacs" "--batch"
+                        "-L" "."
+                        "-f" "batch-byte-compile"
+                        "ob-glsl.el")))
+            (add-after 'install 'install-elisp
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let ((lisp-dir (string-append #$output "/share/emacs/site-lisp")))
+                  (install-file "ob-glsl.el" lisp-dir)
+                  (install-file "ob-glsl.elc" lisp-dir)
+                  (install-file "ob-glsl-module.so" lisp-dir))
+                #t)))))
+      (synopsis "Org-Babel support for GLSL (OpenGL Shading Language)")
+      (description
+       "This package provides an Org-Babel backend for executing GLSL code blocks
+in Emacs Org mode. It uses OpenGL 3.3 via SDL2 for rendering results.")
+      (home-page "https://github.com/finalpatch/ob-glsl")
+      (license license:expat))))
 
 (define emacs-copilot-0.4
   (let ((commit "7904f13d52e8dcda3af67142c42fa7c8345ba6fe"))
