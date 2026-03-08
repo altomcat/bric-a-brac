@@ -52,7 +52,9 @@
   #:export (emacs-svg-lib-0.2.8)
   #:export (emacs-kind-icon-0.2.2)
   #:export (emacs-simple-httpd-1.4)
-  #:export (emacs-copilot-0.4))
+  #:export (emacs-copilot-0.4)
+  #:export (emacs-copilot-master)
+  )
 
 (define emacs-copilot-0.4
   (let ((commit "7904f13d52e8dcda3af67142c42fa7c8345ba6fe"))
@@ -74,20 +76,36 @@
     (home-page "https://github.com/copilot-emacs/copilot.el")
     (license license:expat))))
 
-(define emacs-simple-httpd-1.4
-  (package
-    (inherit emacs-simple-httpd)
-    (name "emacs-simple-httpd")
-    (version "1.4.0")
-    (source
-     (origin
+(define emacs-copilot-master
+  (let ((commit "59a4a292236ac9bea8756c0a0613b750b14d91eb"))
+    (package
+     (inherit emacs-copilot-0.4)
+     (name "emacs-copilot")
+     (version "master")
+     (source
+      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/skeeto/emacs-web-server")
-             (commit version)))
+             (url "https://github.com/copilot-emacs/copilot.el")
+             (commit commit)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05z23nxjkd7wzp9h58ap9hxmgh6kqcsyx0fi7vlh8ny2rdd631r3"))))))
+        (base32 "0dhsc7yiqmspka6yjzp32z6ah5y575r6ybddbvqfldbxsp2cdz33")))))))
+
+(define emacs-simple-httpd-1.4
+  (package
+   (inherit emacs-simple-httpd)
+   (name "emacs-simple-httpd")
+   (version "1.4.0")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/skeeto/emacs-web-server")
+           (commit version)))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32 "05z23nxjkd7wzp9h58ap9hxmgh6kqcsyx0fi7vlh8ny2rdd631r3"))))))
 
 (define emacs-svg-lib-0.2.8
   (let ((commit "710803c3bea1a25d6d47475c6e1eee734e7144ae"))
@@ -331,4 +349,5 @@ is still a work-in-progress.")
 ;; emacs-kind-icon-0.2.2
 ;; emacs-simple-httpd-1.4
 ;; emacs-ob-glsl
+;; emacs-copilot-master
 ;; emacs-copilot-0.4
