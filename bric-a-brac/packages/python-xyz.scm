@@ -27,8 +27,8 @@
 
 (define-module (bric-a-brac packages python-xyz)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix build-system python)
   #:use-module (guix packages)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system pyproject)
   #:use-module (guix git-download)
   #:use-module (guix download)
@@ -45,7 +45,7 @@
   #:use-module (bric-a-brac packages antivirus)
   #:export (python-obsws-python)
   #:export (python-yara)
-  #:export (python-pefile-2024.8.26))
+  )
 
 (define python-pefile-2024.8.26
   (package
