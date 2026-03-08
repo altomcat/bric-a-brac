@@ -83,6 +83,6 @@
     (license license:expat)))
 
 
-
+;; Uncommnent a package name to install with `guix package -f gl.scm'
 ;; glfw+static
-glbinding
+;; glbinding
