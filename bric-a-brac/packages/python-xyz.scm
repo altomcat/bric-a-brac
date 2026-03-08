@@ -47,6 +47,7 @@
   #:use-module (bric-a-brac packages reverse-engineering)
   #:export (python-obsws-python)
   #:export (python-yara)
+  #:export (python-ukkonen)
   #:export (python-aespython)
   #:export (python-libemu)
   )
@@ -176,7 +177,7 @@ It enables the emulation of x86 shellcode under Python by leveraging libemu's en
      "This package provides a Python SDK for OBS Studio @code{WebSocket} v5.0.")
     (license license:expat)))
 
-(define-public python-ukkonen
+(define python-ukkonen
   (package
     (name "python-ukkonen")
     (version "1.0.1")
@@ -199,7 +200,7 @@ It enables the emulation of x86 shellcode under Python by leveraging libemu's en
 distance (Ukkonen).")
     (license license:expat)))
 
-(define-public python-libvirt
+(define python-libvirt
   (package
    (name "python-libvirt")
    (version "10.6.0")
@@ -230,3 +231,5 @@ virtualization library.")
 ;; python-obsws-python
 ;; python-yara
 ;; python-pefile-2024.8.26
+;; python-aespython
+;; python-libemu
