@@ -42,9 +42,12 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages perl)
   #:use-module (bric-a-brac packages antivirus)
+  #:use-module (bric-a-brac packages reverse-engineering)
   #:export (python-obsws-python)
   #:export (python-yara)
+  #:export (python-aespython)
   #:export (python-libemu)
   )
 
@@ -73,6 +76,30 @@
        "pylibemu provides a Python-friendly interface to the libemu library via Cython bindings.
 It enables the emulation of x86 shellcode under Python by leveraging libemu's engine, allowing analysis of shellcode, obtaining execution profiles, detecting dynamic behaviour (such as API calls e.g. LoadLibraryA, WSASocket), and capturing an emulation trace from within a Python environment.")
       (license license:gpl2))))
+
+(define python-aespython
+  (let ((commit "199906935b8336902b1f552d5570363dfa7ff110"))
+    (package
+      (name "python-aespython")
+      (version "0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/serprex/aespython")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "02vf2l297g5pa5lqzj9f6svnrhdlg1sd1s9q1rmgh7lr1ad7mw1w"))))
+      (build-system python-build-system)
+      (arguments
+       (list #:tests? #f))
+      (home-page "https://github.com/serprex/aespython")
+      (synopsis "aespython is pure AES library for python3")
+      (description
+       "This package is a dependy of peepdf.")
+      (license license:gpl3+))))
 
 (define python-pefile-2024.8.26
   (package
