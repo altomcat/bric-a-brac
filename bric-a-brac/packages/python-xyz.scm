@@ -45,7 +45,34 @@
   #:use-module (bric-a-brac packages antivirus)
   #:export (python-obsws-python)
   #:export (python-yara)
+  #:export (python-libemu)
   )
+
+(define python-libemu
+  (let ((commit "3e3f2022b38840d71061f194e5917e1ba831241e"))
+    (package
+      (name "python-libemu")
+      (version "0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/buffer/pylibemu.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1cqbgr7zn5xhrrq2plvn5xslxx86434fg5fj9b348nim1w4c3m8x"))))
+      (build-system python-build-system)
+      (arguments
+       (list #:tests? #f))
+      (native-inputs (list libemu))
+      (home-page "https://github.com/buffer/pylibemu")
+      (synopsis "A Libemu Cython wrapper")
+      (description
+       "pylibemu provides a Python-friendly interface to the libemu library via Cython bindings.
+It enables the emulation of x86 shellcode under Python by leveraging libemu's engine, allowing analysis of shellcode, obtaining execution profiles, detecting dynamic behaviour (such as API calls e.g. LoadLibraryA, WSASocket), and capturing an emulation trace from within a Python environment.")
+      (license license:gpl2))))
 
 (define python-pefile-2024.8.26
   (package
