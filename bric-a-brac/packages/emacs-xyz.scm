@@ -5,7 +5,6 @@
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintener: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Created: 2024/08/11
-;; Version: 0.0.3
 
 ;; This file is part of GNU Emacs.
 
@@ -34,7 +33,9 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-build)
   #:use-module (gnu packages emacs-xyz)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages pkg-config)
@@ -55,6 +56,7 @@
   #:export (emacs-copilot-0.4)
   #:export (emacs-copilot-master)
   #:export (emacs-ob-glsl)
+  #:export (emacs-compat+info)
   )
 
 (define emacs-ob-glsl
@@ -381,8 +383,20 @@ is still a work-in-progress.")
      (description "This package provides a Flycheck checker for Odin.")
      (license license:expat))))
 
+(define emacs-compat+info
+  (package
+    (inherit emacs-compat)
+    (name "emacs-compat")
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'make-info
+            (lambda _
+              (invoke "make" "compat.info"))))))
+    (native-inputs (list texinfo))))
 
-;; Uncommnent to install with `guix package -f emacs-substitute.scm'
+;; Uncommnent to install with `guix package -f emacs-xyz.scm'
 ;; emacs-substitute
 ;; emacs-org-appear-0.3.1
 ;; emacs-hasliberg-theme
@@ -398,3 +412,4 @@ is still a work-in-progress.")
 ;; emacs-ob-glsl
 ;; emacs-copilot-master
 ;; emacs-copilot-0.4
+;; emacs-compat+info
