@@ -58,11 +58,9 @@
 ;; It will link the executable with the needed libraries.
 
 (define odin
-  (let ((commit "b942f72cb085f79b214a596c0628984298358eaa")
-        (revision "dev-2026-02"))
-    (package
+  (package
       (name "odin")
-      (version (git-version "0.0" revision commit))
+      (version "dev-2026-04")
       ;; works preferrably on a local directory, otherwise from the git repository
       (source
        (let ((local-source  "../../../projects/odin/Odin"))
@@ -73,11 +71,11 @@
                (method git-fetch)
                (uri (git-reference
                       (url "https://github.com/odin-lang/Odin.git")
-                      (commit commit)))
+                      (commit version)))
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "0hdw6m67n9v8g1xp87c0hppd8slh5h5bb4sp6j22rkcpb4acf9af"))
+                 "0cjfs7x4brx4p4qsvpbnw0fnn3gcv788hyhcsy620gfag21q5990"))
                (modules '((guix build utils)))
                (snippet
                 '(begin
@@ -205,28 +203,28 @@ high-performance development, including game engines, graphics programming, and 
 code.  Odin provides expressive syntax, support for data-oriented programming, a minimal
 runtime, strong compile-time efficiency, and seamless C interoperability.  This package
 includes the Odin compiler and standard library for building and running Odin programs.")
-      (license license:expat))))
+      (license license:expat)))
 
 (define box2d-avx2+static
   (package
-    (inherit box2d-3.1)
-    (name "box2d-avx2+static")
-    (arguments
-     (substitute-keyword-arguments
-         (package-arguments box2d)
-       ((#:configure-flags original-flags)
-        #~(cons* "-DBUILD_SHARED_LIBS=OFF"
-                 "-DBOX2D_AVX2=ON"
-                 "-DBOX2D_UNIT_TESTS=OFF"
-                 "-DBOX2D_SAMPLES=OFF"
-                 (filter (lambda (flag)
-                           (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
-                                               "-DBOX2D_AVX2=OFF"
-                                               "-DBUILD_SHARED_LIBS=ON"))))
-                         #$original-flags)))
-       ((#:phases phases)
-        #~(modify-phases #$phases
-            (delete 'check)))))))
+   (inherit box2d-3.1)
+   (name "box2d-avx2+static")
+   (arguments
+    (substitute-keyword-arguments
+     (package-arguments box2d)
+     ((#:configure-flags original-flags)
+      #~(cons* "-DBUILD_SHARED_LIBS=OFF"
+               "-DBOX2D_AVX2=ON"
+               "-DBOX2D_UNIT_TESTS=OFF"
+               "-DBOX2D_SAMPLES=OFF"
+               (filter (lambda (flag)
+                         (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
+                                             "-DBOX2D_AVX2=OFF"
+                                             "-DBUILD_SHARED_LIBS=ON"))))
+                       #$original-flags)))
+     ((#:phases phases)
+      #~(modify-phases #$phases
+                       (delete 'check)))))))
 
 (define box2d-simd+static
   (package
