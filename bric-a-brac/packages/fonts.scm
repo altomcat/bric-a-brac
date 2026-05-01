@@ -3,9 +3,9 @@
   #:use-module (gnu packages fonts)
   #:use-module (guix git-download)
   #:use-module (guix build-system font)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:export (font-iosevka-comfy))
+  #:use-module ((guix licenses) #:prefix license:))
 
+;; Replaced by font-aporetic
 (define font-iosevka-comfy
   (package
    (name "font-iosevka-comfy")
@@ -23,5 +23,3 @@
    (synopsis "A TTF font derived from Iosevka")
    (description "Iosevka Comfy is a TTF font derived from Iosevka. It is a slightly tweaked version of the original, designed for enhanced readability.")
    (license license:silofl1.1)))
-
-;;font-iosevka-comfy
