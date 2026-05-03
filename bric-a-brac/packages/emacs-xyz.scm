@@ -57,6 +57,7 @@
   #:export (emacs-copilot-master)
   #:export (emacs-ob-glsl)
   #:export (emacs-compat+info)
+  #:export (emacs-denote-explore-fix)
   )
 
 (define emacs-ob-glsl
@@ -396,6 +397,55 @@ is still a work-in-progress.")
               (invoke "make" "compat.info"))))))
     (native-inputs (list texinfo))))
 
+(define emacs-denote-explore-fix
+  (package
+    (name "emacs-denote-explore")
+    (version "4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pprevos/denote-explore")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04lc5fw11wixbjdkzbl63g03rdybv6q4mh1dc6c9y322g8qq3r0k"))))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-denote emacs-dash))
+    (arguments
+     (list
+      #:tests? #f ;no tests
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'build-info-manual
+            (lambda* (#:key outputs #:allow-other-keys)
+              (invoke "emacs"
+                      "--batch"
+                      "--eval=(require 'ox-texinfo)"
+                      "--eval=(find-file \"denote-explore.org\")"
+                      "--eval=(org-texinfo-export-to-info)")))
+          (add-after 'install 'copy-denote-html-template
+            (lambda* (#:key outputs #:allow-other-keys)
+              (with-directory-excursion (in-vicinity #$output
+                                                     (string-append "/share/emacs/site-lisp/denote-explore-"
+                                                                    #$version))
+                (install-file (in-vicinity #$source "denote-explore-network.html") ".")))))))
+    (native-inputs (list texinfo))
+    (home-page "https://github.com/pprevos/denote-explore")
+    (synopsis "Analyse and visualise a collection of Denote notes")
+    (description
+     "The Denote Explore package provides auxiliary functions to
+maintain and explore your collection of Denote files.  Denote Explore provides
+four groups of Emacs commands:
+@enumerate
+@item Summary statistics: Count and visualize notes, attachments and keywords.
+@item Random walks: Generate new ideas using Serendipity.
+@item Janitor: Manage your Denote collection.
+@item Visualisations: Visualise your Denote network as a network
+graph.  (Optional dependencies GraphViz, D3js, to be acquired separately!)
+@end enumerate")
+    (license license:gpl3+)))
+
 ;; Uncommnent to install with `guix package -f emacs-xyz.scm'
 ;; emacs-substitute
 ;; emacs-org-appear-0.3.1
@@ -413,3 +463,4 @@ is still a work-in-progress.")
 ;; emacs-copilot-master
 ;; emacs-copilot-0.4
 ;; emacs-compat+info
+;; emacs-denote-explore-fix
