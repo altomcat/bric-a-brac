@@ -60,7 +60,7 @@
 (define odin
   (package
       (name "odin")
-      (version "dev-2026-04")
+      (version "dev-2026-05")
       ;; works preferrably on a local directory, otherwise from the git repository
       (source
        (let ((local-source  "../../../projects/odin/Odin"))
@@ -75,7 +75,7 @@
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "0cjfs7x4brx4p4qsvpbnw0fnn3gcv788hyhcsy620gfag21q5990"))
+                 "13ma2bfv56y0g59gf6kykawizq5n7wa5p7lz33ir2if59f2p41qc"))
                (modules '((guix build utils)))
                (snippet
                 '(begin
