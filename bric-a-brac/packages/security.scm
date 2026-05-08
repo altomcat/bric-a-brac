@@ -29,13 +29,20 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system pyproject)
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-build)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages check)
   #:use-module (bric-a-brac packages python-xyz)
   #:export (peepdf)
+  #:export (python-msoffcrypto-tool)
+  #:export (python-pcodedmp)
+  #:export (python-oletools)
   )
 
 
@@ -71,6 +78,30 @@ helping security researchers and forensic analysts understand the structure
 and potential threats contained within them. It supports features such as
 JavaScript beautification, object parsing, and decryption of embedded data.")
       (license license:gpl3+))))
+
+(define python-msoffcrypto-tool
+  (package
+    (name "python-msoffcrypto-tool")
+    (version "6.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nolze/msoffcrypto-tool")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05vkcdzlc9kqq0znbk355gwq3kglymjj91ax7vpcfy04p5fd06da"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs (list python-cryptography python-olefile))
+    (native-inputs (list python-poetry-core))
+    (home-page "https://github.com/nolze/msoffcrypto-tool")
+    (synopsis
+     "Python tool and library for decrypting and encrypting MS Office files using a password or other keys")
+    (description
+     "Python tool and library for decrypting and encrypting MS Office files using a
+password or other keys.")
+    (license license:expat)))
 
 ;; Uncomment to install with `guix package -f security.scm'
 peepdf
