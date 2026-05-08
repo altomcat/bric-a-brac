@@ -56,7 +56,7 @@
   (let ((commit "3e3f2022b38840d71061f194e5917e1ba831241e"))
     (package
       (name "python-libemu")
-      (version "0")
+      (version "1.0")
       (source
        (origin
          (method git-fetch)
