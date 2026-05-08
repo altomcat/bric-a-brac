@@ -141,7 +141,7 @@ It enables the emulation of x86 shellcode under Python by leveraging libemu's en
                                                 (url "https://github.com/VirusTotal/yara")
                                                 (commit (string-append "v" version))))
                                          (sha256
-                                          (base32 "01sgnh6m6bprmakagxqr2w960p81qwxgfn7c21isw2qv9hzj6b5x")))
+                                          (base32 "16f8pkadyi6m8vp63hfs5634b6gix3ry9g5n7bkklx30ab2hpskb")))
                                      "./yara")))
                (replace 'build
                  (lambda* (#:key python #:allow-other-keys)
