@@ -129,5 +129,35 @@ password or other keys.")
     (description "This package provides a VBA p-code disassembler.")
     (license license:gpl3)))
 
+(define python-oletools
+  (package
+    (name "python-oletools")
+    (version "0.60.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/decalage2/oletools")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rmp0gjpl4sg4pw2v1hcnx1kg4m7zmssd3v0qccibdwjwmakayx2"))))
+    (build-system pyproject-build-system)
+    (inputs (list  python-msoffcrypto-tool))
+    (propagated-inputs (list python-colorclass python-easygui python-olefile
+                             python-pcodedmp python-pyparsing))
+    (native-inputs (list python-pytest python-setuptools zip))
+    (home-page "https://github.com/decalage2/oletools")
+    (synopsis
+     "Python tools to analyze security characteristics of MS Office and OLE files (also called Structured Storage, Compound File Binary Format or Compound Document File Format), for Malware Analysis and Incident Response #DFIR")
+    (description
+     "Python tools to analyze security characteristics of MS Office and OLE files
+(also called Structured Storage, Compound File Binary Format or Compound
+Document File Format), for Malware Analysis and Incident Response #DFIR.")
+    (license license:expat)))
+
 ;; Uncomment to install with `guix package -f security.scm'
-peepdf
+;; peepdf
+;; python-pcodedmp
+;; python-oletools
+;; python-msoffcrypto-tool
