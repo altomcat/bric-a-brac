@@ -103,5 +103,31 @@ JavaScript beautification, object parsing, and decryption of embedded data.")
 password or other keys.")
     (license license:expat)))
 
+(define python-pcodedmp
+  (package
+    (name "python-pcodedmp")
+    (version "1.2.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bontchev/pcodedmp")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sl1zs2qfagh390z3fn4sa3hqvskn3x0m6h0637i1kzbrcc8b0s9"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list #:tests? #f                ; It needs python-oletools for tests
+           #:phases                   ; which also needs pcodedmp itself
+           #~(modify-phases %standard-phases
+               (delete 'sanity-check))))
+    ;;(propagated-inputs (list python-oletools))
+    (native-inputs (list python-setuptools))
+    (home-page "https://github.com/bontchev/pcodedmp")
+    (synopsis "A VBA p-code disassembler")
+    (description "This package provides a VBA p-code disassembler.")
+    (license license:gpl3)))
+
 ;; Uncomment to install with `guix package -f security.scm'
 peepdf
