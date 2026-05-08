@@ -120,14 +120,14 @@ It enables the emulation of x86 shellcode under Python by leveraging libemu's en
 (define python-yara
   (package
     (name "python-yara")
-    (version "4.5.4")
+    (version "4.5.5")
     (source
      (origin (method git-fetch)
              (uri (git-reference
                     (url "https://github.com/VirusTotal/yara-python.git")
                     (commit (string-append "v" version))))
              (sha256
-              (base32 "0w65c8ha05s9fzibbzijl90wgdwylg0vr9jw8d9s7s7q8jk0p76r"))))
+              (base32 "0mvx2k743vsb9vc9clbf2a2jcvwqg9m4vw8fa2r0jxqbj2ljbhfw"))))
     (build-system python-build-system)
     (arguments
      (list #:tests? #f
