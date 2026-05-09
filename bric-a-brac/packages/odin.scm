@@ -49,7 +49,8 @@
   ;;
   #:use-module (bric-a-brac packages game-development)
   #:use-module (bric-a-brac packages gl)
-  #:export (odin))
+  #:export (odin)
+  #:export (ols))
 
 ;; Notes for myself:
 ;;
@@ -302,8 +303,61 @@ includes the Odin compiler and standard library for building and running Odin pr
                  wayland
                  libxkbcommon))))))
 
+(define ols
+  (let* ((commit "16172aaca1e1fa3fea197b3f21016b332757b5ca")
+         (version "dev-2026-05")
+         (revision "1")
+         (ols-version (git-version version revision commit)))
+    (package
+     (name "ols")
+     (version version)
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DanielGavin/ols")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0knsrxpb6p0pfffmm0p1jrjzjcl6h214j53l5bj68p5gmg4ibm7n"))))
+     (build-system gnu-build-system)
+     (arguments
+      (list
+       #:tests? #f
+       #:phases
+       #~(modify-phases %standard-phases
+                        (delete 'configure)
+                        (replace 'build
+                                 (lambda* (#:key inputs #:allow-other-keys)
+                                   (substitute* "build.sh"
+                                                (("VERSION=\".*\"")
+                                                 (format #f "VERSION=~s" #$ols-version)))
+                                   (display "Building ols ...\n")
+                                   (invoke "./build.sh")
+                                   (display "Building odin formatter ...\n")
+                                   (invoke "./odinfmt.sh")))
+                        (replace 'install
+                                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                                   (let ((bin (string-append #$output "/bin")))
+                                     (for-each (lambda (app)
+                                                 (install-file app bin))
+                                               '("ols" "odinfmt"))))))))
+    (native-inputs
+     (list bash-minimal
+           clang-toolchain
+           odin))
+    (home-page "https://github.com/DanielGavin/ols")
+    (synopsis "Language server for the Odin programming language")
+    (description
+     "OLS is a language server implementation for the @code{Odin} programming
+language. It provides completion, hover, references, semantic tokens,
+document symbols, formatting support, and other LSP features.")
+    (license license:expat))))
+
 ;; Uncomment to install with `guix package -f odin'
 ;; raylib-for-odin+static
-;;box2d-simd+static
-;;box2d-avx2+static
-;;odin
+;; box2d-simd+static
+;; box2d-avx2+static
+;; odin
+;; ols
