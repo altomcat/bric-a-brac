@@ -50,7 +50,8 @@
   #:use-module (bric-a-brac packages game-development)
   #:use-module (bric-a-brac packages gl)
   #:export (odin)
-  #:export (ols))
+  #:export (ols)
+  #:export (ols-nightly))
 
 ;; Notes for myself:
 ;;
@@ -355,9 +356,31 @@ language. It provides completion, hover, references, semantic tokens,
 document symbols, formatting support, and other LSP features.")
     (license license:expat))))
 
+(define ols-nightly
+  (let* ((commit "67ec8eae3cd6898a05ce1b1f6d632c2dafa197aa")
+         (version "nightly")
+         (revision "0")
+         (ols-version (git-version version revision commit)))
+  (package
+    (inherit ols)
+    (name "ols-nightly")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DanielGavin/ols")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1fa7xxf8lvn7ahp27yykhjx8zw11qgdd5vqsljdq9pxgiwh9nr0f"))))
+     )))
+
+
 ;; Uncomment to install with `guix package -f odin'
 ;; raylib-for-odin+static
 ;; box2d-simd+static
 ;; box2d-avx2+static
 ;; odin
-;; ols
+;;ols
+;;ols-nightly
