@@ -31,6 +31,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -96,6 +97,24 @@ framework.")
      (file-name (git-file-name name version))
      (sha256
       (base32 "0j4vf19idnimpf8niqiw9dmdm40mvvjrhky63yyv2n0z1zs35912"))))))
+
+(define raylib-6
+  (let ((commit "dbc56a87da87d973a9c5baa4e7438a9d20121d28")
+        (tag "6.0")
+        (revision "0"))
+    (package
+      (inherit raylib)
+      (name "raylib")
+      (version (git-version tag revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/raysan5/raylib/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1scwmldxk5bvr4k99vi5cy4kjm77x5603pc9qxi2mv8w6c6qrvpk")))))))
 
 (define raylib-5.5
   (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
