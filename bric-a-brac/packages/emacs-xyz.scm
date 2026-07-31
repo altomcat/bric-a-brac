@@ -37,7 +37,6 @@
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages sdl)
-  #:use-module (gnu packages ninja)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages gl)
@@ -77,7 +76,7 @@
           (base32 "1mr02xyvfs3vl2gs4f6x4plq8q1ybrfqzk5s2qqs9916k8qcll23"))))
       (build-system cmake-build-system)
       (native-inputs
-       (list pkg-config ninja glbinding gcc-toolchain emacs))
+       (list pkg-config (@ (gnu packages build-tools) ninja) glbinding gcc-toolchain emacs))
       (inputs
        (list sdl2 sdl2-image))
       (arguments
