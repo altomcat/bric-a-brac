@@ -47,6 +47,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages ncurses)
   #:export (box2d-3.1)
+  #:export (raylib-6)
   #:export (glslviewer))
 
 
