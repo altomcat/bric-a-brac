@@ -40,6 +40,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages rust)
   #:use-module (bric-a-brac packages gl)
   ;; #:export (emacs-substitute)
   ;; #:export (emacs-consult-denote)
@@ -55,9 +56,39 @@
   #:export (emacs-copilot-0.4)
   #:export (emacs-copilot-master)
   #:export (emacs-ob-glsl)
+  #:export (emacs-ob-rust)
   #:export (emacs-compat+info)
   #:export (emacs-denote-explore-fix)
   )
+
+(define emacs-ob-rust
+  (let ((commit "be059d231fafeb24a658db212a55ccdc55c0c500")
+        (revision "0"))
+    (package
+      (name "emacs-ob-rust")
+      (version (git-version "0.0." revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/micanzhang/ob-rust")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r6ckhnyr824s4isz8z6hbd7ix9fyg9pha115km9pvafhcw05xdn"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       (list emacs rust))
+      (arguments
+       (list
+        #:tests? #f))
+      (synopsis "Org-Babel support for RUST programing language")
+      (description
+       "This package provides an Org-Babel backend for executing RUST code blocks
+in Emacs Org mode.")
+      (home-page "https://github.com/micanzhang/ob-rust")
+      (license license:expat))))
+
 
 (define emacs-ob-glsl
   (let ((commit "65148e0596a17e342646e8d1bac465e0ca7f31d0") ; example commit
@@ -463,3 +494,4 @@ graph.  (Optional dependencies GraphViz, D3js, to be acquired separately!)
 ;; emacs-copilot-0.4
 ;; emacs-compat+info
 ;; emacs-denote-explore-fix
+;; emacs-ob-rust
