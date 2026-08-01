@@ -152,26 +152,29 @@
                             (stb-libs (string-append (getcwd) "/vendor/stb/lib"))
                             (cgltf-lib (string-append (getcwd) "/vendor/cgltf/lib/cgltf.a"))
                             (liblz4-lib (string-append #$lz4:static "/lib/liblz4.a"))
-                            (liblua-shared-lib (string-append #$lua-5.4 "/lib"))
+                            (liblua-shared-lib (string-append #$lua-5.4 "/lib/liblua.so"))
                             (liblua-lib (string-append #$lua-5.4 "/lib/liblua.a")))
                        (cond
                         ((string-prefix? "x86_64-linux" target-system)
+                         ;; box2d
                          (copy-file box2d-avx2-lib (string-append box2d-lib-out
                                                                   "box2d_other_amd64_avx2.a"))
                          (copy-file box2d-simd-lib (string-append box2d-lib-out
                                                                   "box2d_other_amd64_sse2.a"))
+                         ;; stb
                          (for-each (lambda (file)
                                      (install-file file stb-libs-out))
                                    (find-files stb-libs "\\.a$"))
                          (install-file cgltf-lib cgltf-lib-out)
+                         ;; raylib
                          (install-file raylib-lib raylib-lib-out)
                          (copy-recursively raylib-shared-lib raylib-lib-out)
                          ;; lua
                          (copy-file liblua-lib (in-vicinity liblua-lib-out "liblua54.a"))
-                         (for-each (lambda (file)
-                                     (install-file file liblua-lib-out))
-                                   (find-files liblua-shared-lib "\\.so(\\.[0-9]+)*$"))
+                         (copy-file liblua-shared-lib (in-vicinity liblua-lib-out "liblua54.so"))
+                         ;; glfw
                          (install-file glfw-lib glfw-lib-out)
+                         ;; lz4
                          (install-file liblz4-lib liblz4-lib-out))
                         (else
                          '())))
