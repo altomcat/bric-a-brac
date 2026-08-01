@@ -34,6 +34,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages elf)
@@ -139,6 +140,7 @@
                             (stb-libs-out (string-append #$output "/vendor/stb/lib"))
                             (cgltf-lib-out (string-append #$output "/vendor/cgltf/lib"))
                             (liblz4-lib-out (string-append #$output "/vendor/compress/lz4/lib"))
+                            (liblua-lib-out (in-vicinity #$output "/vendor/lua/5.4/linux"))
                             (box2d-avx2-lib (string-append #$box2d-avx2+static
                                                            "/lib/libbox2d.a"))
                             (box2d-simd-lib (string-append #$box2d-simd+static
@@ -149,7 +151,9 @@
                             (glfw-lib (string-append #$glfw+static "/lib/libglfw3.a"))
                             (stb-libs (string-append (getcwd) "/vendor/stb/lib"))
                             (cgltf-lib (string-append (getcwd) "/vendor/cgltf/lib/cgltf.a"))
-                            (liblz4-lib (string-append #$lz4:static "/lib/liblz4.a")))
+                            (liblz4-lib (string-append #$lz4:static "/lib/liblz4.a"))
+                            (liblua-shared-lib (string-append #$lua-5.4 "/lib"))
+                            (liblua-lib (string-append #$lua-5.4 "/lib/liblua.a")))
                        (cond
                         ((string-prefix? "x86_64-linux" target-system)
                          (copy-file box2d-avx2-lib (string-append box2d-lib-out
@@ -162,6 +166,11 @@
                          (install-file cgltf-lib cgltf-lib-out)
                          (install-file raylib-lib raylib-lib-out)
                          (copy-recursively raylib-shared-lib raylib-lib-out)
+                         ;; lua
+                         (copy-file liblua-lib (in-vicinity liblua-lib-out "liblua54.a"))
+                         (for-each (lambda (file)
+                                     (install-file file liblua-lib-out))
+                                   (find-files liblua-shared-lib "\\.so(\\.[0-9]+)*$"))
                          (install-file glfw-lib glfw-lib-out)
                          (install-file liblz4-lib liblz4-lib-out))
                         (else
@@ -188,6 +197,7 @@
              glfw+static
              raylib-for-odin
              raylib-for-odin+static
+             lua-5.4
              lz4))
       (inputs
        (list clang-toolchain-18
