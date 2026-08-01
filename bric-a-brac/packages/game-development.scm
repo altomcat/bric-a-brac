@@ -115,39 +115,38 @@ framework.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1scwmldxk5bvr4k99vi5cy4kjm77x5603pc9qxi2mv8w6c6qrvpk")))))))
-
-(define raylib-5.5
-  (let ((commit "4f091f44a8d91d51019aa65c12da570435de450b")
-        (tag "5.5")
-        (revision "0"))
-    (package
-      (inherit raylib)
-      (name "raylib")
-      (version (git-version tag revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/raysan5/raylib/")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0m01c23mxvg96zypqyi2fpkd1dsvgflafi3ncga6ihdvxbwaybk5"))))
+                  "1scwmldxk5bvr4k99vi5cy4kjm77x5603pc9qxi2mv8w6c6qrvpk"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments raylib)
-         ((#:phases current-phases)
-          #~(modify-phases #$current-phases
-              (add-after 'install 'install-parser
-                (lambda _
-                  (copy-recursively (string-append #$source "/parser/output")
-                                    (string-append #$output "/parser/output"))))))))
-      (inputs
-       (modify-inputs (package-inputs raylib)
-                      (replace "glfw" glfw-3.4))))))
+       (list #:tests? #f  ;no test
+             #:configure-flags
+             #~(list "-DBUILD_SHARED_LIBS=ON"
+                     "-DUSE_EXTERNAL_GLFW=ON"
+                     (string-append "-DCMAKE_C_FLAGS=-lpulse "
+                                    "-Wno-error=incompatible-pointer-types"))
+             #:phases
+             #~(modify-phases %standard-phases
+                 (add-before 'configure 'configure-miniaudio
+                   ;; Use PulseAudio as raudio backend.
+                   (lambda _
+                     (substitute* "src/raudio.c"
+                       (("^#include \"external/miniaudio\\.h\"") "
+#define MA_NO_RUNTIME_LINKING
+#define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
+#define MA_ENABLE_PULSEAUDIO
+#include \"external/miniaudio.h\"
+"))))
+                 (add-after 'install 'install-api-files
+                   ;; For generating bindings.
+                   (lambda _
+                     (install-file (string-append #$source "/src/rcamera.h")
+                                   (string-append #$output "/include"))
+                     (copy-recursively
+                      (string-append #$source "/tools/rlparser/output")
+                      (string-append #$output "/share/raylib"))))))))))
 
-;; Uncommnent to install with `guix package -f raylib-5.5'
-;; raylib-5.5
+
+;; Uncommnent to install with `guix package -f raylib-6'
 ;; box2d-3.1
 ;; live-glsl
 ;; glslviewer
+;; raylib-6
