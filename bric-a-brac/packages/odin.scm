@@ -62,7 +62,7 @@
 (define odin
   (package
       (name "odin")
-      (version "dev-2026-06")
+      (version "dev-2026-07a")
       ;; works preferrably on a local directory, otherwise from the git repository
       (source
        (let ((local-source  "../../../projects/odin/Odin"))
@@ -77,7 +77,7 @@
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "0vzdjhx48s5rjxcmdpp9rqbcc6q13x9gglsa3h10mly7zl3sxfjk"))
+                 "1l8bfgfc2ljxb5k08nm18ykihgj74pwppax32srm0j7nwcs4q90l"))
                (modules '((guix build utils)))
                (snippet
                 '(begin
@@ -253,42 +253,26 @@ includes the Odin compiler and standard library for building and running Odin pr
 ;; GLFW is embedded to Raylib, X11 becomes the default backend with my wayland
 ;; session. It's not the case with the raylib-5.5 build with an external
 ;; GLFW-3.4 shared library.
-(define raylib-for-odin
-  (package
-    (inherit raylib)
-    (name "raylib-for-odin")))
 
-;; (define raylib-for-odin
-;;   (let ((inherit-from raylib-5.5))
-;;     (package
-;;       (inherit inherit-from-pkg)
-;; (name "raylib-for-odin")
-;;       (arguments
-;;        (substitute-keyword-arguments (package-arguments inherit-from-pkg)
-;;          ((#:configure-flags original-flags)
-;;           ;; glfw library will be embedded with Raylib
-;;           ;; (doesn´t work with wayland, glfw 3.4?)
-;;           #~(cons* "-DUSE_EXTERNAL_GLFW=OFF"
-;;                    "-DGLFW_BUILD_WAYLAND=ON"
-;;                    (delete "-DUSE_EXTERNAL_GLFW=ON" #$original-flags)))))
-;;       (native-inputs
-;;        (modify-inputs (package-native-inputs inherit-from-pkg)
-;;                       (append pkg-config
-;;                               wayland
-;;                               libxkbcommon))))))
+(define raylib-for-odin
+  (let ((raylib raylib-6))
+    (package
+      (inherit raylib)
+      (name "raylib-for-odin"))))
 
 ;; The previous explanation is true for static build too.
 ;; There is no work-around at the moment because GLFW needs to be embedded.
 ;; The final executable is linked against libraylib.a with GLFW embedded in it.
 ;; Add `mesa' package to be able to use X11 backend only.
 ;; EDIT for wayland : add `wayland', `libxkbcommon' and `glfw@3.4'
+
 (define raylib-for-odin+static
-  (let ((inherit-from-pkg raylib))
+  (let ((raylib raylib-6))
     (package
-      (inherit inherit-from-pkg)
+      (inherit raylib)
       (name "raylib-for-odin+static")
       (arguments
-       (substitute-keyword-arguments (package-arguments inherit-from-pkg)
+       (substitute-keyword-arguments (package-arguments raylib)
          ((#:configure-flags original-flags)
           #~(cons* "-DBUILD_SHARED_LIBS=OFF"
                    "-DWITH_PIC=ON"
@@ -299,7 +283,7 @@ includes the Odin compiler and standard library for building and running Odin pr
                                                  "-DUSE_EXTERNAL_GLFW=ON"))))
                            #$original-flags)))))
       (native-inputs
-       (modify-inputs (package-native-inputs inherit-from-pkg)
+       (modify-inputs (package-native-inputs raylib)
          (append pkg-config
                  wayland
                  libxkbcommon))))))
@@ -378,9 +362,10 @@ document symbols, formatting support, and other LSP features.")
 
 
 ;; Uncomment to install with `guix package -f odin'
+;; raylib-for-odin
 ;; raylib-for-odin+static
 ;; box2d-simd+static
 ;; box2d-avx2+static
 ;; odin
-;;ols
-;;ols-nightly
+;; ols
+;; ols-nightly
