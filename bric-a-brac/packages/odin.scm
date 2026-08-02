@@ -183,11 +183,13 @@
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let* ((bin (string-append #$output "/bin/odin"))
                             (raylib-lib (string-append #$output "/vendor/raylib/linux"))
+                            (lua-lib (in-vicinity #$output "/vendor/lua/5.4/linux"))
                             (llvm-lib (string-append #$llvm "/lib"))
                             (clang-lib (string-append #$clang-toolchain "/lib")))
                        (wrap-program bin
                          `("ODIN_ROOT" = (,#$output))
                          `("LD_LIBRARY_PATH" = (,raylib-lib
+                                                ,lua-lib
                                                 ,llvm-lib
                                                 ,clang-lib))))
                      #t)))))
