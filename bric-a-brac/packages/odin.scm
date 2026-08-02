@@ -228,7 +228,8 @@ includes the Odin compiler and standard library for building and running Odin pr
     (substitute-keyword-arguments
      (package-arguments box2d)
      ((#:configure-flags original-flags)
-      #~(cons* "-DBUILD_SHARED_LIBS=OFF"
+      #~(cons* "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
+               "-DBUILD_SHARED_LIBS=OFF"
                "-DBOX2D_AVX2=ON"
                "-DBOX2D_UNIT_TESTS=OFF"
                "-DBOX2D_SAMPLES=OFF"
@@ -249,7 +250,8 @@ includes the Odin compiler and standard library for building and running Odin pr
      (substitute-keyword-arguments
          (package-arguments box2d)
        ((#:configure-flags original-flags)
-        #~(cons* "-DBUILD_SHARED_LIBS=OFF"
+        #~(cons* "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
+                 "-DBUILD_SHARED_LIBS=OFF"
                  "-DBOX2D_AVX2=OFF"
                  "-DBOX2D_UNIT_TESTS=OFF"
                  "-DBOX2D_SAMPLES=OFF"
