@@ -47,6 +47,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages ncurses)
   #:export (box2d-3.1)
+  #:export (box3d)
   #:export (raylib-6)
   #:export (glslviewer))
 
@@ -83,6 +84,36 @@ effects without requiring a full graphics engine or application
 framework.")
     (home-page "https://github.com/patriciogonzalezvivo/")
     (license (list license:expat))))
+
+(define-public box3d
+  (package
+   (name "box3d")
+   (version "0.1.0")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/erincatto/box3d")
+           (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32 "0j6zkrhrkb643diixhcm4z8fvfr4f3v4j3irdcsdxys5p4ckayq6"))))
+   (build-system cmake-build-system)
+   (arguments
+    (list #:configure-flags
+          #~(list "-DBOX3D_UNIT_TESTS=OFF"
+                  "-DBOX3D_SAMPLES=OFF")
+          #:phases
+          #~(modify-phases %standard-phases
+              (delete 'check))))
+   (home-page "https://github.com/erincatto/box3d")
+   (synopsis "3D physics engine")
+   (description
+    "Box3D is a 3D rigid body physics engine for games and simulations.  It
+provides fast and stable rigid body dynamics with support for various
+collision shapes, joints, and contact constraints.  Box3D is the successor
+to the popular 2D physics engine Box2D, developed by the same author.")
+   (license (list license:expat))))
 
 (define box2d-3.1
   (package
