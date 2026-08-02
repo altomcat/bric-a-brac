@@ -155,6 +155,10 @@
                           (copy-file box2d-avx2-lib "box2d_other_amd64_avx2.a")
                           (copy-file box2d-simd-lib "box2d_other_amd64_sse2.a"))
 
+                         ;; box3d
+                         (install-file (in-vicinity #$box3d-simd+static "/lib/libbox3d.a")
+                                    (in-vicinity #$output "/vendor/box3d/lib/linux-amd64"))
+
                          ;; stb
                          (for-each
                           (lambda (file)
@@ -209,6 +213,7 @@
              which
              box2d-avx2+static
              box2d-simd+static
+             box3d-simd+static
              glfw+static
              raylib-for-odin
              raylib-for-odin+static
@@ -270,6 +275,49 @@ includes the Odin compiler and standard library for building and running Odin pr
                  (filter (lambda (flag)
                            (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
                                                "-DBOX2D_AVX2=ON"
+                                               "-DBUILD_SHARED_LIBS=ON"))))
+                         #$original-flags)))
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (delete 'check)))))))
+
+(define box2d-avx2+static
+  (package
+   (inherit box2d-3.1)
+   (name "box2d-avx2+static")
+   (arguments
+    (substitute-keyword-arguments
+     (package-arguments box2d)
+     ((#:configure-flags original-flags)
+      #~(cons* "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
+               "-DBUILD_SHARED_LIBS=OFF"
+               "-DBOX2D_AVX2=ON"
+               "-DBOX2D_UNIT_TESTS=OFF"
+               "-DBOX2D_SAMPLES=OFF"
+               (filter (lambda (flag)
+                         (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
+                                             "-DBOX2D_AVX2=OFF"
+                                             "-DBUILD_SHARED_LIBS=ON"))))
+                       #$original-flags)))
+     ((#:phases phases)
+      #~(modify-phases #$phases
+                       (delete 'check)))))))
+
+(define box3d-simd+static
+  (package
+    (inherit box3d)
+    (name "box3d+static")
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments box3d)
+       ((#:configure-flags original-flags)
+        #~(cons* "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
+                 "-DBUILD_SHARED_LIBS=OFF"
+                 "-DBOX3D_DISABLE_SIMD=ON"
+                 "-DBOX3D_UNIT_TESTS=OFF"
+                 "-DBOX3D_SAMPLES=OFF"
+                 (filter (lambda (flag)
+                           (not (member flag '("-BOX3D_DISABLE_SIMD=OFF"
                                                "-DBUILD_SHARED_LIBS=ON"))))
                          #$original-flags)))
        ((#:phases phases)
