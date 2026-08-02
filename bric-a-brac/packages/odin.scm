@@ -134,48 +134,58 @@
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let* ((target-system #$(or (%current-target-system)
                                                  (%current-system)))
-                            (box2d-lib-out (string-append #$output "/vendor/box2d/lib/"))
-                            (raylib-lib-out (string-append #$output "/vendor/raylib/linux/"))
-                            (glfw-lib-out (string-append #$output "/vendor/glfw/lib/"))
-                            (stb-libs-out (string-append #$output "/vendor/stb/lib"))
-                            (cgltf-lib-out (string-append #$output "/vendor/cgltf/lib"))
-                            (liblz4-lib-out (string-append #$output "/vendor/compress/lz4/lib"))
-                            (liblua-lib-out (in-vicinity #$output "/vendor/lua/5.4/linux"))
-                            (box2d-avx2-lib (string-append #$box2d-avx2+static
+                            (box2d-avx2-lib (in-vicinity #$box2d-avx2+static
                                                            "/lib/libbox2d.a"))
-                            (box2d-simd-lib (string-append #$box2d-simd+static
+                            (box2d-simd-lib (in-vicinity #$box2d-simd+static
                                                            "/lib/libbox2d.a"))
-                            (raylib-lib (string-append #$raylib-for-odin+static
+                            (raylib-lib (in-vicinity #$raylib-for-odin+static
                                                        "/lib/libraylib.a"))
-                            (raylib-shared-lib (string-append #$raylib-for-odin "/lib"))
-                            (glfw-lib (string-append #$glfw+static "/lib/libglfw3.a"))
-                            (stb-libs (string-append (getcwd) "/vendor/stb/lib"))
-                            (cgltf-lib (string-append (getcwd) "/vendor/cgltf/lib/cgltf.a"))
-                            (liblz4-lib (string-append #$lz4:static "/lib/liblz4.a"))
-                            (liblua-shared-lib (string-append #$lua-5.4 "/lib/liblua.so"))
-                            (liblua-lib (string-append #$lua-5.4 "/lib/liblua.a")))
+                            (raylib-shared-lib (in-vicinity #$raylib-for-odin "/lib"))
+                            (glfw-lib (in-vicinity #$glfw+static "/lib/libglfw3.a"))
+                            (stb-libs (in-vicinity (getcwd) "/vendor/stb/lib"))
+                            (cgltf-lib (in-vicinity (getcwd) "/vendor/cgltf/lib/cgltf.a"))
+                            (liblz4-lib (in-vicinity #$lz4:static "/lib/liblz4.a"))
+                            (liblua-shared-lib (in-vicinity #$lua-5.4 "/lib/liblua.so"))
+                            (liblua-lib (in-vicinity #$lua-5.4 "/lib/liblua.a")))
                        (cond
                         ((string-prefix? "x86_64-linux" target-system)
                          ;; box2d
-                         (copy-file box2d-avx2-lib (string-append box2d-lib-out
-                                                                  "box2d_other_amd64_avx2.a"))
-                         (copy-file box2d-simd-lib (string-append box2d-lib-out
-                                                                  "box2d_other_amd64_sse2.a"))
+                         (with-directory-excursion
+                          (in-vicinity #$output "/vendor/box2d/lib/")
+                          (copy-file box2d-avx2-lib "box2d_other_amd64_avx2.a")
+                          (copy-file box2d-simd-lib "box2d_other_amd64_sse2.a"))
+
                          ;; stb
-                         (for-each (lambda (file)
-                                     (install-file file stb-libs-out))
-                                   (find-files stb-libs "\\.a$"))
-                         (install-file cgltf-lib cgltf-lib-out)
+                         (for-each
+                          (lambda (file)
+                            (install-file file
+                                          (in-vicinity #$output "/vendor/stb/lib")))
+                          (find-files stb-libs "\\.a$"))
+
+                         ;; cgltf
+                         (install-file cgltf-lib
+                                       (in-vicinity #$output "/vendor/cgltf/lib"))
+
                          ;; raylib
-                         (install-file raylib-lib raylib-lib-out)
-                         (copy-recursively raylib-shared-lib raylib-lib-out)
+                         (with-directory-excursion
+                          (in-vicinity #$output "/vendor/raylib/linux/")
+                          (install-file raylib-lib ".")
+                          (copy-recursively raylib-shared-lib "."))
+
                          ;; lua
-                         (copy-file liblua-lib (in-vicinity liblua-lib-out "liblua54.a"))
-                         (copy-file liblua-shared-lib (in-vicinity liblua-lib-out "liblua54.so"))
+                         (with-directory-excursion
+                          (in-vicinity #$output "/vendor/lua/5.4/linux")
+                          (copy-file liblua-lib "liblua54.a")
+                          (copy-file liblua-shared-lib "liblua54.so")
+                          (symlink "liblua54.so" "liblua.so.5.4"))
+
                          ;; glfw
-                         (install-file glfw-lib glfw-lib-out)
+                         (install-file glfw-lib
+                                       (in-vicinity #$output "/vendor/glfw/lib/"))
+
                          ;; lz4
-                         (install-file liblz4-lib liblz4-lib-out))
+                         (install-file liblz4-lib
+                                       (in-vicinity #$output "/vendor/compress/lz4/lib")))
                         (else
                          '())))
                      #t))
