@@ -211,8 +211,8 @@ in Emacs Org mode. It uses OpenGL 3.3 via SDL2 for rendering results.")
     (propagated-inputs (list emacs-svg-lib-0.2.8))))
 
 (define emacs-odin-mode
-  (let ((commit "65134ecf10ffc4893ca60432b979a23c5ac9a3f1")
-        (revision "0"))
+  (let ((commit "d3f221ee375c95b5817f13d48d4ade4f3581e181")
+        (revision "1"))
     (package
      (name "emacs-odin-mode")
      (version (git-version "0.0" revision commit))
@@ -223,7 +223,7 @@ in Emacs Org mode. It uses OpenGL 3.3 via SDL2 for rendering results.")
                     (commit commit)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1bx0vaqq1va772gqgq7znicamqkz4ry0wai9rlvjwzc58axhml2b"))))
+               (base32 "06m68i943i3hihpv7bcjz2ys43xmnhkkhzpci3qbjxqnx0wvqnp0"))))
      (build-system emacs-build-system)
      (home-page "https://github.com/mattt-b/odin-mode.git")
      (synopsis "Emacs major mode for editing Odin code")
