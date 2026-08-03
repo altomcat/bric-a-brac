@@ -331,7 +331,7 @@ mostly a direct port of Miasma theme for @samp{vim} editor.")
    (license license:gpl3)))
 
 (define emacs-odin-ts-mode
-  (let ((commit "800134c4f104ab48b28ed33c8ebce1c8b8707add")
+  (let ((commit "138bf6871b5e703ba5ad3f1c3464e2b4ce0fa846")
         (revision "0"))
     (package
      (name "emacs-odin-ts-mode")
@@ -344,7 +344,7 @@ mostly a direct port of Miasma theme for @samp{vim} editor.")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "147mfmdy660j7isy2cq0npfszzrxir7vnlp1b3wzrqh1cjklr8kq"))))
+        (base32 "1ai0bxdaki8qlnblmh5hkjny27mxya5f7zvbvsm4j0b1jdb718r5"))))
      (build-system emacs-build-system)
      (arguments
       (list
