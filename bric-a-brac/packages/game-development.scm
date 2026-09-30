@@ -117,18 +117,24 @@ to the popular 2D physics engine Box2D, developed by the same author.")
 
 (define box2d-3.1
   (package
-   (inherit box2d-3)
-   (name "box2d")
-   (version "3.1.1")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/erincatto/box2d")
-           (commit (string-append "v" version))))
-     (file-name (git-file-name name version))
-     (sha256
-      (base32 "0j4vf19idnimpf8niqiw9dmdm40mvvjrhky63yyv2n0z1zs35912"))))))
+    (inherit box2d-3)
+    (name "box2d")
+    (version "3.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/erincatto/box2d")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0j4vf19idnimpf8niqiw9dmdm40mvvjrhky63yyv2n0z1zs35912"))))
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments box2d-3)
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (delete 'fix-pkgconfig-prefix)))))))
 
 (define raylib-6
   (let ((commit "dbc56a87da87d973a9c5baa4e7438a9d20121d28")
