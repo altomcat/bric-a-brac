@@ -50,7 +50,13 @@
   #:use-module (bric-a-brac packages game-development)
   #:use-module (bric-a-brac packages gl)
   #:export (odin)
-  #:export (ols)
+  #:export (odin-dev-2026-04)
+  #:export (odin-dev-2026-05)
+  #:export (odin-dev-2026-06)
+  #:export (odin-dev-2026-07)
+  #:export (odin-dev-2026-07a)
+  #:export (odin-dev-2026-08)
+  ;;#:export (ols)
   #:export (ols-nightly))
 
 ;; Notes for myself:
@@ -381,7 +387,7 @@ document symbols, formatting support, and other LSP features.")
   (let* ((commit "dd0f85d31c91e9d04202cc422288d15b52206474")
          (version "nightly")
          (revision "0")
-         (ols-version "nightly-2026-10-04-939400ec")) ;(git-version version revision commit)
+         (ols-version (git-version version revision commit)))
   (package
     (inherit ols)
     (name "ols-nightly")
@@ -394,9 +400,12 @@ document symbols, formatting support, and other LSP features.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fa7xxf8lvn7ahp27yykhjx8zw11qgdd5vqsljdq9pxgiwh9nr0f"))))
+         "10vx8x9kgjz1vhq68jx66m7hn1vxfvy7zn0ckfaddlfanjjcc0sw"))))
     (native-inputs
-     (list odin)))))
+     (list bash-minimal
+           llvm-18
+           clang-toolchain-18
+           odin)))))
 
 
 ;; uncomment to install with `guix package -f odin'
@@ -404,7 +413,7 @@ document symbols, formatting support, and other LSP features.")
 ;; raylib-for-odin+static
 ;; box2d-simd+static
 ;; box2d-avx2+static
-odin
+;; odin
 ;; ols
 ;; ols-nightly
 ;; odin-dev-2026-04
