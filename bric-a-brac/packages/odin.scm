@@ -32,7 +32,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages python)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages llvm)
@@ -66,27 +65,20 @@
       (version "dev-2026-09")
       ;; works preferrably on a local directory, otherwise from the git repository
       (source
-       (let ((local-source  "../../../projects/odin/Odin"))
-         (if (file-exists? local-source)
-             (local-file local-source "odin-checkout"
-                         #:recursive? #t)
-             (origin
-               (method git-fetch)
-               (uri (git-reference
-                      (url "https://github.com/odin-lang/Odin.git")
-                      (commit version)))
-               (file-name (git-file-name name version))
-               (sha256
-                (base32
-                 "0xn1711afjl3haczpqh8n0s508xgi0c2r7d3ywirsznh6slhz4a1"))
-               (modules '((guix build utils)))
-               (snippet
-                '(begin
-                   ;; (for-each delete-file-recursively
-                   ;;           (find-files "vendor"
-                   ;;                       "(darwin|macos|windows)" #:directories? #t))
-                   (for-each delete-file
-                             (find-files "vendor" "\\.(a|o|lib|dll|so(\\.[0-9]+)*)$"))))))))
+       (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/odin-lang/Odin.git")
+              (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0xn1711afjl3haczpqh8n0s508xgi0c2r7d3ywirsznh6slhz4a1"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (for-each delete-file
+                      (find-files "vendor" "\\.(a|o|lib|dll|so(\\.[0-9]+)*)$"))))))
       (build-system gnu-build-system)
       (arguments
        (list #:tests? #f
@@ -96,12 +88,6 @@
                  (delete 'configure)
                  (replace 'build
                    (lambda _
-                     ;; Workaround to avoid the crash of the demo
-                     (substitute* "build_odin.sh"
-                       (("\\./odin run examples.*" all)
-                        (format #f "~a ~a~%"
-                                "LD_PRELOAD=libgcc_s.so.1"
-                                all)))
                      (invoke "./build_odin.sh")
                      #t))
                  (replace 'install
@@ -119,15 +105,15 @@
                  (add-after 'install 'build-stb-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (with-directory-excursion "./vendor/stb/src"
-                       (setenv "CC" (which "gcc"))
-                       (setenv "AR" (which "gcc-ar"))
+                       (setenv "CC" (which "clang"))
+                       (setenv "AR" (which "llvm-ar"))
                        (invoke "./build_stb.sh" "unix"))
                      #t))
                  (add-after 'install 'build-cgltf-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (with-directory-excursion "./vendor/cgltf/src"
-                       (setenv "CC" (which "gcc"))
-                       (setenv "AR" (which "gcc-ar"))
+                       (setenv "CC" (which "clang"))
+                       (setenv "AR" (which "llvm-ar"))
                        (invoke "./build_cgltf.sh" "unix"))
                      #t))
                  (add-after 'build-stb-static-libraries 'replace-static-libraries
@@ -281,32 +267,10 @@ includes the Odin compiler and standard library for building and running Odin pr
         #~(modify-phases #$phases
             (delete 'check)))))))
 
-(define box2d-avx2+static
-  (package
-   (inherit box2d-3.1)
-   (name "box2d-avx2+static")
-   (arguments
-    (substitute-keyword-arguments
-     (package-arguments box2d)
-     ((#:configure-flags original-flags)
-      #~(cons* "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
-               "-DBUILD_SHARED_LIBS=OFF"
-               "-DBOX2D_AVX2=ON"
-               "-DBOX2D_UNIT_TESTS=OFF"
-               "-DBOX2D_SAMPLES=OFF"
-               (filter (lambda (flag)
-                         (not (member flag '("-DBOX2D_BUILD_TESTBED=OFF"
-                                             "-DBOX2D_AVX2=OFF"
-                                             "-DBUILD_SHARED_LIBS=ON"))))
-                       #$original-flags)))
-     ((#:phases phases)
-      #~(modify-phases #$phases
-                       (delete 'check)))))))
-
 (define box3d-simd+static
   (package
     (inherit box3d)
-    (name "box3d+static")
+    (name "box3d-simd+static")
     (arguments
      (substitute-keyword-arguments
          (package-arguments box3d)
@@ -317,7 +281,7 @@ includes the Odin compiler and standard library for building and running Odin pr
                  "-DBOX3D_UNIT_TESTS=OFF"
                  "-DBOX3D_SAMPLES=OFF"
                  (filter (lambda (flag)
-                           (not (member flag '("-BOX3D_DISABLE_SIMD=OFF"
+                           (not (member flag '("-DBOX3D_DISABLE_SIMD=OFF"
                                                "-DBUILD_SHARED_LIBS=ON"))))
                          #$original-flags)))
        ((#:phases phases)
@@ -364,8 +328,8 @@ includes the Odin compiler and standard library for building and running Odin pr
                  libxkbcommon))))))
 
 (define ols
-  (let* ((commit "16172aaca1e1fa3fea197b3f21016b332757b5ca")
-         (version "dev-2026-05")
+  (let* ((commit "4f4377078d9e6121d26d87a3342b7d1db3c25a4b")
+         (version "dev-2026-08")
          (revision "1")
          (ols-version (git-version version revision commit)))
     (package
@@ -380,7 +344,7 @@ includes the Odin compiler and standard library for building and running Odin pr
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0knsrxpb6p0pfffmm0p1jrjzjcl6h214j53l5bj68p5gmg4ibm7n"))))
+         "0hn12yp2lsabhsp5iak67mm1fh4y6mwhvpn276921lsfjiph64vm"))))
      (build-system gnu-build-system)
      (arguments
       (list
@@ -404,9 +368,7 @@ includes the Odin compiler and standard library for building and running Odin pr
                                                  (install-file app bin))
                                                '("ols" "odinfmt"))))))))
     (native-inputs
-     (list bash-minimal
-           clang-toolchain
-           odin))
+     (list odin-dev-2026-07))
     (home-page "https://github.com/DanielGavin/ols")
     (synopsis "Language server for the Odin programming language")
     (description
@@ -416,10 +378,10 @@ document symbols, formatting support, and other LSP features.")
     (license license:expat))))
 
 (define ols-nightly
-  (let* ((commit "67ec8eae3cd6898a05ce1b1f6d632c2dafa197aa")
+  (let* ((commit "dd0f85d31c91e9d04202cc422288d15b52206474")
          (version "nightly")
          (revision "0")
-         (ols-version (git-version version revision commit)))
+         (ols-version "nightly-2026-10-04-939400ec")) ;(git-version version revision commit)
   (package
     (inherit ols)
     (name "ols-nightly")
@@ -433,14 +395,19 @@ document symbols, formatting support, and other LSP features.")
        (sha256
         (base32
          "1fa7xxf8lvn7ahp27yykhjx8zw11qgdd5vqsljdq9pxgiwh9nr0f"))))
-     )))
+    (native-inputs
+     (list odin)))))
 
 
-;; Uncomment to install with `guix package -f odin'
+;; uncomment to install with `guix package -f odin'
 ;; raylib-for-odin
 ;; raylib-for-odin+static
 ;; box2d-simd+static
 ;; box2d-avx2+static
-;; odin
+odin
 ;; ols
 ;; ols-nightly
+;; odin-dev-2026-04
+;; odin-dev-2026-05
+;; odin-dev-2026-06
+;; odin-dev-2026-07a
