@@ -63,7 +63,7 @@
 (define odin
   (package
       (name "odin")
-      (version "dev-2026-07a")
+      (version "dev-2026-09")
       ;; works preferrably on a local directory, otherwise from the git repository
       (source
        (let ((local-source  "../../../projects/odin/Odin"))
@@ -78,7 +78,7 @@
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "1l8bfgfc2ljxb5k08nm18ykihgj74pwppax32srm0j7nwcs4q90l"))
+                 "0xn1711afjl3haczpqh8n0s508xgi0c2r7d3ywirsznh6slhz4a1"))
                (modules '((guix build utils)))
                (snippet
                 '(begin
@@ -121,14 +121,14 @@
                      (with-directory-excursion "./vendor/stb/src"
                        (setenv "CC" (which "gcc"))
                        (setenv "AR" (which "gcc-ar"))
-                       (invoke (which "make") "unix"))
+                       (invoke "./build_stb.sh" "unix"))
                      #t))
                  (add-after 'install 'build-cgltf-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (with-directory-excursion "./vendor/cgltf/src"
                        (setenv "CC" (which "gcc"))
                        (setenv "AR" (which "gcc-ar"))
-                       (invoke (which "make") "unix"))
+                       (invoke "./build_cgltf.sh" "unix"))
                      #t))
                  (add-after 'build-stb-static-libraries 'replace-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -198,8 +198,8 @@
                      (let* ((bin (string-append #$output "/bin/odin"))
                             (raylib-lib (string-append #$output "/vendor/raylib/linux"))
                             (lua-lib (in-vicinity #$output "/vendor/lua/5.4/linux"))
-                            (llvm-lib (string-append #$llvm "/lib"))
-                            (clang-lib (string-append #$clang-toolchain "/lib")))
+                            (llvm-lib (string-append #$llvm-18 "/lib"))
+                            (clang-lib (string-append #$clang-toolchain-18 "/lib")))
                        (wrap-program bin
                          `("ODIN_ROOT" = (,#$output))
                          `("LD_LIBRARY_PATH" = (,raylib-lib
