@@ -94,6 +94,9 @@
                  (delete 'configure)
                  (replace 'build
                    (lambda _
+                     (substitute* "build_odin.sh"
+                       (("CPPFLAGS=\"\\$CPPFLAGS -DODIN_VERSION_RAW=.*\"")
+                        (format #f "CPPFLAGS=\"$CPPFLAGS -DODIN_VERSION_RAW=\\\"~s\\\"\"" #$version)))
                      (invoke "./build_odin.sh")
                      #t))
                  (replace 'install
