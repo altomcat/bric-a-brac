@@ -116,17 +116,17 @@
                      (with-directory-excursion "./vendor/stb/src"
                        (invoke "./build_stb.sh" "unix"))
                      #t))
-                 (add-after 'install 'build-cgltf-static-libraries
+                 (add-after 'build-stb-static-libraries 'build-cgltf-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (with-directory-excursion "./vendor/cgltf/src"
                        (invoke "./build_cgltf.sh" "unix"))
                      #t))
-                 (add-after 'install 'build-miniaudio-static-libraries
+                 (add-after 'build-cgltf-static-libraries 'build-miniaudio-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (with-directory-excursion "./vendor/miniaudio/src"
                        (invoke "./build_miniaudio.sh"))
                      #t))
-                 (add-after 'build-stb-static-libraries 'replace-static-libraries
+                 (add-after 'build-miniaudio-static-libraries 'replace-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let* ((target-system #$(or (%current-target-system)
                                                  (%current-system)))
@@ -197,7 +197,7 @@
                         (else
                          '())))
                      #t))
-                 (add-after 'install 'wrap-odin
+                 (add-after 'replace-static-libraries 'wrap-odin
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let* ((bin (string-append #$output "/bin/odin"))
                             (raylib-lib (string-append #$output "/vendor/raylib/linux"))
