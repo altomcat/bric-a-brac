@@ -97,7 +97,7 @@
                      (substitute* "build_odin.sh"
                        (("CPPFLAGS=\"\\$CPPFLAGS -DODIN_VERSION_RAW=.*\"")
                         (format #f "CPPFLAGS=\"$CPPFLAGS -DODIN_VERSION_RAW=\\\"~s\\\"\"" #$version)))
-                     (invoke "./build_odin.sh")
+                     (invoke "./build_odin.sh" "release")
                      #t))
                  (replace 'install
                    (lambda* (#:key inputs outputs #:allow-other-keys)
