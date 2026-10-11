@@ -50,14 +50,11 @@
   #:use-module (bric-a-brac packages game-development)
   #:use-module (bric-a-brac packages gl)
   #:export (odin)
-  #:export (odin-dev-2026-04)
-  #:export (odin-dev-2026-05)
-  #:export (odin-dev-2026-06)
-  #:export (odin-dev-2026-07)
-  #:export (odin-dev-2026-07a)
   #:export (odin-dev-2026-08)
-  ;;#:export (ols)
-  #:export (ols-nightly))
+  #:export (odin-dev-2026-09)
+  #:export (odin-dev-2026-10)
+  #:export (ols)
+  #:export (ols-dev-2026-08))
 
 ;; Notes for myself:
 ;;
@@ -101,10 +98,9 @@
                      #t))
                  (replace 'install
                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (let* ((odin "odin")
-                            (sources '("/base" "/core" "/vendor"))
+                     (let* ((sources '("/base" "/core" "/vendor"))
                             (bin (string-append #$output "/bin")))
-                       (install-file odin bin)
+                       (install-file "odin" bin)
                        (for-each
                         (lambda (folder)
                           (copy-recursively (string-append #$source folder)
@@ -241,6 +237,90 @@ runtime, strong compile-time efficiency, and seamless C interoperability.  This 
 includes the Odin compiler and standard library for building and running Odin programs.")
       (license license:expat)))
 
+(define odin-dev-2026-09
+  (package
+   (inherit odin)
+   (name "odin")
+   (version "dev-2026-09")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/odin-lang/Odin.git")
+           (commit version)))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32
+       "0xn1711afjl3haczpqh8n0s508xgi0c2r7d3ywirsznh6slhz4a1"))))
+   (arguments
+    (substitute-keyword-arguments
+     (package-arguments odin)
+     ((#:phases phases)
+      #~(modify-phases #$phases
+                       (replace 'build
+                                (lambda _
+                                  (substitute* "build_odin.sh"
+                                               (("CPPFLAGS=\"\\$CPPFLAGS -DODIN_VERSION_RAW=.*\"")
+                                                (format #f "CPPFLAGS=\"$CPPFLAGS -DODIN_VERSION_RAW=\\\"~s\\\"\"" #$version)))
+                                  (invoke "./build_odin.sh" "release")
+                                  #t))))))))
+
+(define odin-dev-2026-08
+  (package
+   (inherit odin)
+   (name "odin")
+   (version "dev-2026-08")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/odin-lang/Odin.git")
+           (commit version)))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32
+       "1mihxx5apjggqdl5002lb09lhw7pv38vzhhav2raxr953nkzn40a"))))
+   (arguments
+    (substitute-keyword-arguments
+     (package-arguments odin)
+     ((#:phases phases)
+      #~(modify-phases #$phases
+                       (replace 'build
+                                (lambda _
+                                  (substitute* "build_odin.sh"
+                                               (("CPPFLAGS=\"\\$CPPFLAGS -DODIN_VERSION_RAW=.*\"")
+                                                (format #f "CPPFLAGS=\"$CPPFLAGS -DODIN_VERSION_RAW=\\\"~s\\\"\"" #$version)))
+                                  (invoke "./build_odin.sh" "release")
+                                  #t))))))))
+
+(define odin-dev-2026-10
+  (package
+   (inherit odin)
+   (name "odin")
+   (version "dev-2026-10")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/odin-lang/Odin.git")
+           (commit version)))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32
+       "02f292znmyvbw0c6fihdllgp8amqv1v78k8xa739qprm62i1j5l6"))))
+   (arguments
+    (substitute-keyword-arguments
+     (package-arguments odin)
+     ((#:phases phases)
+      #~(modify-phases #$phases
+                       (replace 'build
+                                (lambda _
+                                  (substitute* "build_odin.sh"
+                                               (("CPPFLAGS=\"\\$CPPFLAGS -DODIN_VERSION_RAW=.*\"")
+                                                (format #f "CPPFLAGS=\"$CPPFLAGS -DODIN_VERSION_RAW=\\\"~s\\\"\"" #$version)))
+                                  (invoke "./build_odin.sh" "release")
+                                  #t))))))))
+
 (define box2d-avx2+static
   (package
    (inherit box2d-3.1)
@@ -346,9 +426,9 @@ includes the Odin compiler and standard library for building and running Odin pr
                  libxkbcommon))))))
 
 (define ols
-  (let* ((commit "4f4377078d9e6121d26d87a3342b7d1db3c25a4b")
+  (let* ((commit "dd0f85d31c91e9d04202cc422288d15b52206474")
          (version "dev-2026-08")
-         (revision "1")
+         (revision "0")
          (ols-version (git-version version revision commit)))
     (package
      (name "ols")
@@ -362,7 +442,7 @@ includes the Odin compiler and standard library for building and running Odin pr
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0hn12yp2lsabhsp5iak67mm1fh4y6mwhvpn276921lsfjiph64vm"))))
+         "10vx8x9kgjz1vhq68jx66m7hn1vxfvy7zn0ckfaddlfanjjcc0sw"))))
      (build-system gnu-build-system)
      (arguments
       (list
@@ -386,7 +466,10 @@ includes the Odin compiler and standard library for building and running Odin pr
                                                  (install-file app bin))
                                                '("ols" "odinfmt"))))))))
     (native-inputs
-     (list odin-dev-2026-07))
+     (list bash-minimal
+           llvm-18
+           clang-toolchain-18
+           odin))
     (home-page "https://github.com/DanielGavin/ols")
     (synopsis "Language server for the Odin programming language")
     (description
@@ -395,15 +478,15 @@ language. It provides completion, hover, references, semantic tokens,
 document symbols, formatting support, and other LSP features.")
     (license license:expat))))
 
-(define ols-nightly
+(define ols-dev-2026-08
   (let* ((commit "dd0f85d31c91e9d04202cc422288d15b52206474")
-         (version "nightly")
+         (version "dev-2026-08")
          (revision "0")
          (ols-version (git-version version revision commit)))
-  (package
-    (inherit ols)
-    (name "ols-nightly")
-    (source
+    (package
+     (inherit ols)
+     (name "ols-dev-2026-08")
+     (source
       (origin
        (method git-fetch)
        (uri (git-reference
@@ -413,11 +496,25 @@ document symbols, formatting support, and other LSP features.")
        (sha256
         (base32
          "10vx8x9kgjz1vhq68jx66m7hn1vxfvy7zn0ckfaddlfanjjcc0sw"))))
-    (native-inputs
-     (list bash-minimal
-           llvm-18
-           clang-toolchain-18
-           odin)))))
+     (arguments
+      (substitute-keyword-arguments
+       (package-arguments ols)
+       ((#:phases phases)
+        #~(modify-phases #$phases
+                         (replace 'build
+                                  (lambda* (#:key inputs #:allow-other-keys)
+                                    (substitute* "build.sh"
+                                                 (("VERSION=\".*\"")
+                                                  (format #f "VERSION=~s" #$ols-version)))
+                                    (display "Building ols ...\n")
+                                    (invoke "./build.sh")
+                                    (display "Building odin formatter ...\n")
+                                    (invoke "./odinfmt.sh")))))))
+     (native-inputs
+      (list bash-minimal
+            llvm-18
+            clang-toolchain-18
+            odin-dev-2026-08)))))
 
 
 ;; uncomment to install with `guix package -f odin'
@@ -427,8 +524,7 @@ document symbols, formatting support, and other LSP features.")
 ;; box2d-avx2+static
 ;; odin
 ;; ols
-;; ols-nightly
-;; odin-dev-2026-04
-;; odin-dev-2026-05
-;; odin-dev-2026-06
-;; odin-dev-2026-07a
+;; ols-dev-2026-08
+;; odin-dev-2026-08
+;; odin-dev-2026-09
+;; odin-dev-2026-10
