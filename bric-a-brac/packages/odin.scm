@@ -114,16 +114,17 @@
                  (add-after 'install 'build-stb-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (with-directory-excursion "./vendor/stb/src"
-                       (setenv "CC" (which "clang"))
-                       (setenv "AR" (which "llvm-ar"))
                        (invoke "./build_stb.sh" "unix"))
                      #t))
                  (add-after 'install 'build-cgltf-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (with-directory-excursion "./vendor/cgltf/src"
-                       (setenv "CC" (which "clang"))
-                       (setenv "AR" (which "llvm-ar"))
                        (invoke "./build_cgltf.sh" "unix"))
+                     #t))
+                 (add-after 'install 'build-miniaudio-static-libraries
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (with-directory-excursion "./vendor/miniaudio/src"
+                       (invoke "./build_miniaudio.sh"))
                      #t))
                  (add-after 'build-stb-static-libraries 'replace-static-libraries
                    (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -138,6 +139,7 @@
                             (raylib-shared-lib (in-vicinity #$raylib-for-odin "/lib"))
                             (glfw-lib (in-vicinity #$glfw+static "/lib/libglfw3.a"))
                             (stb-libs (in-vicinity (getcwd) "/vendor/stb/lib"))
+                            (miniaudio-libs (in-vicinity (getcwd) "/vendor/miniaudio/lib"))
                             (cgltf-lib (in-vicinity (getcwd) "/vendor/cgltf/lib/cgltf.a"))
                             (liblz4-lib (in-vicinity #$lz4:static "/lib/liblz4.a"))
                             (liblua-shared-lib (in-vicinity #$lua-5.4 "/lib/liblua.so"))
@@ -160,6 +162,13 @@
                             (install-file file
                                           (in-vicinity #$output "/vendor/stb/lib")))
                           (find-files stb-libs "\\.a$"))
+
+                         ;; miniaudio
+                         (for-each
+                          (lambda (file)
+                            (install-file file
+                                          (in-vicinity #$output "/vendor/miniaudio/lib")))
+                          (find-files miniaudio-libs "\\.a$"))
 
                          ;; cgltf
                          (install-file cgltf-lib
