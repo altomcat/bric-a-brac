@@ -295,9 +295,9 @@
        (list "CC=gcc")))
     ;; TODO: Add gmp and libzip and make the build system actually find them.
     (native-inputs
-     (list pkg-config capstone (@ (gnu packages build-tools) libuv) openssl libzip xxhash))
+     (list pkg-config capstone libuv openssl libzip xxhash))
     (inputs
-     (list capstone (@ (gnu packages build-tools) libuv) zip))
+     (list capstone libuv zip))
     (propagated-inputs
      ;; In the Libs: section of r_hash.pc.
      (list xxhash))
