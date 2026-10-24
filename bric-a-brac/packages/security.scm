@@ -42,8 +42,7 @@
   #:export (peepdf)
   #:export (python-msoffcrypto-tool)
   #:export (python-pcodedmp)
-  #:export (python-oletools)
-  )
+  #:export (python-oletools))
 
 
 (define peepdf
@@ -68,6 +67,7 @@
              #:phases
              #~(modify-phases %standard-phases
                  (delete 'sanity-check))))
+      (native-inputs (list python-setuptools))
       (propagated-inputs
        (list python-pillow python-jsbeautifier python-colorama python-aespython python-libemu))
       (home-page "https://github.com/jesparza/peepdf")
