@@ -22,7 +22,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1hn0yjsc66wwdmbzg9yi4pf1zxycywmc3gmpwz2qjycla7hzb8sn"))))
+          (base32 "1pjmr7285hdib3zqh6nbs1lzgb08byn5ayrgd6zvfw9bwsnf48fm"))))
       (build-system gnu-build-system)
       (native-inputs
        (list autoconf automake libtool pkg-config))
