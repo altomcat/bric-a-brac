@@ -52,7 +52,6 @@
   #:export (emacs-ace-window-next)
   #:export (emacs-svg-lib-0.2.8)
   #:export (emacs-kind-icon-0.2.2)
-  #:export (emacs-simple-httpd-1.4)
   #:export (emacs-copilot-0.4)
   #:export (emacs-copilot-master)
   #:export (emacs-ob-glsl)
@@ -171,21 +170,6 @@ in Emacs Org mode. It uses OpenGL 3.3 via SDL2 for rendering results.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0dhsc7yiqmspka6yjzp32z6ah5y575r6ybddbvqfldbxsp2cdz33")))))))
-
-(define emacs-simple-httpd-1.4
-  (package
-   (inherit emacs-simple-httpd)
-   (name "emacs-simple-httpd")
-   (version "1.4.0")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/skeeto/emacs-web-server")
-           (commit version)))
-     (file-name (git-file-name name version))
-     (sha256
-      (base32 "05z23nxjkd7wzp9h58ap9hxmgh6kqcsyx0fi7vlh8ny2rdd631r3"))))))
 
 (define emacs-svg-lib-0.2.8
   (let ((commit "710803c3bea1a25d6d47475c6e1eee734e7144ae"))
@@ -331,7 +315,7 @@ mostly a direct port of Miasma theme for @samp{vim} editor.")
    (license license:gpl3)))
 
 (define emacs-odin-ts-mode
-  (let ((commit "138bf6871b5e703ba5ad3f1c3464e2b4ce0fa846")
+  (let ((commit "6a28b1c35f99b879d288056ce0fcaa15d222ba58")
         (revision "0"))
     (package
      (name "emacs-odin-ts-mode")
@@ -344,7 +328,7 @@ mostly a direct port of Miasma theme for @samp{vim} editor.")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ai0bxdaki8qlnblmh5hkjny27mxya5f7zvbvsm4j0b1jdb718r5"))))
+        (base32 "09wzpih5bjnp19x9x3admw52qbsx1hwisfxbg2m774jmgrg7b67x"))))
      (build-system emacs-build-system)
      (arguments
       (list
@@ -488,7 +472,6 @@ graph.  (Optional dependencies GraphViz, D3js, to be acquired separately!)
 ;; emacs-ace-window-next
 ;; emacs-svg-lib-0.2.8
 ;; emacs-kind-icon-0.2.2
-;; emacs-simple-httpd-1.4
 ;; emacs-ob-glsl
 ;; emacs-copilot-master
 ;; emacs-copilot-0.4
