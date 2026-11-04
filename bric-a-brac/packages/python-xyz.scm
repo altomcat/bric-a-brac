@@ -30,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system python)
   #:use-module (guix build-system pyproject)
+  #:use-module (guix build-system cargo)
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix gexp)
@@ -43,14 +44,20 @@
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages rust-apps)
+  #:use-module (gnu packages rust)
+  #:use-module (gnu packages xdisorg)
   #:use-module (bric-a-brac packages antivirus)
   #:use-module (bric-a-brac packages reverse-engineering)
+  #:use-module (bric-a-brac packages rust-crates)
   #:export (python-obsws-python)
+  #:export (python-pefile-2024.8.26)
   #:export (python-yara)
   #:export (python-ukkonen)
   #:export (python-aespython)
   #:export (python-libemu)
-  )
+  #:export (python-pure-magic-rs))
 
 (define python-libemu
   (let ((commit "3e3f2022b38840d71061f194e5917e1ba831241e"))
@@ -226,6 +233,62 @@ virtualization library.")
     '((upstream-name . "libvirt-python")))
    (license license:lgpl2.1+)))
 
+(define python-pure-magic-rs
+  (package
+    (name "python-pure-magic-rs")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pure_magic_rs" version))
+       (sha256
+        (base32 "0q770dx7ms5mrr9l9ihkzdqj7mc0vl2kjx5hxrqxczslsbk6570h"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:imported-modules (append %cargo-build-system-modules
+                                 %pyproject-build-system-modules)
+      #:modules '(((guix build cargo-build-system) #:prefix cargo:)
+                  (guix build pyproject-build-system)
+                  (guix build utils))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-pyo3-version
+            (lambda _
+              ;; after a guix audit
+	      (substitute* "python/Cargo.toml"
+                (("pyo3 = \"0\\.27.0\"")
+                 "pyo3 = \"0.29\""))))
+          (add-after 'unpack 'prepare-cargo-build-system
+            (lambda args
+              (for-each
+               (lambda (phase)
+                 (format #t "Running cargo phase: ~a~%" phase)
+                 (apply (assoc-ref cargo:%standard-phases phase)
+                        #:cargo-target #$(cargo-triplet)
+                        args))
+               '(unpack-rust-crates
+                 configure
+                 check-for-pregenerated-files
+                 patch-cargo-checksums)))))))
+    (native-inputs
+     (append
+      (list python-pytest
+            (@ (gnu packages build-tools) maturin)
+            rust
+            `(,rust "cargo"))
+      (or (and=> (%current-target-system)
+                 (compose list make-rust-sysroot))
+          '())))
+    (inputs (cons* (@ (gnu packages build-tools) maturin)
+                   (my-cargo-inputs 'pure-magic-rs)))
+    (home-page #f)
+    (synopsis
+     "Python bindings for pure-magic crate, a pure Rust re-implementation of libmagic")
+    (description
+     "@code{python-pure-magic-parser} provides Python bindings for pure-magic crate, allowing you to detect file types, MIME types, and other metadata using a pure Rust alternative to the C libmagic library provided by @code{file}.")
+    (license #f)))
+
 ;; Uncomment to install with `guix package -f python-obsws-python'
 ;; python-libvirt
 ;; python-obsws-python
@@ -233,3 +296,4 @@ virtualization library.")
 ;; python-pefile-2024.8.26
 ;; python-aespython
 ;; python-libemu
+;; python-pure-magic-rs
