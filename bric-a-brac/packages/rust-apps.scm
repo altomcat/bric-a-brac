@@ -85,5 +85,5 @@
 similar to libmagic. It supports MIME type inference and custom magic rules.")
     (license license:gpl3+)))
 
-;; Uncomment to install with `guix package -f pure-magic-rs'
+;; Uncomment to install with `guix package -f rust-apps.scm'
 ;; pure-magic-rs
