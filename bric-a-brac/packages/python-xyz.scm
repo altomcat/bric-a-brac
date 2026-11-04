@@ -57,6 +57,7 @@
   #:export (python-ukkonen)
   #:export (python-aespython)
   #:export (python-libemu)
+  #:export (python-refinery)
   #:export (python-pure-magic-rs))
 
 (define python-libemu
@@ -289,6 +290,44 @@ virtualization library.")
      "@code{python-pure-magic-parser} provides Python bindings for pure-magic crate, allowing you to detect file types, MIME types, and other metadata using a pure Rust alternative to the C libmagic library provided by @code{file}.")
     (license #f)))
 
+(define python-refinery
+  (package
+    (name "python-refinery")
+    (version "0.10.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/binref/refinery")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "141v55qxj13aw3cxlw0v0c3d4jg0j7qda62mv4rc0kydkiivjgfa"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list #:tests? #f)) ;; disable testing
+    (inputs (list python-cython
+                  python-types-colorama
+                  python-defusedxml
+                  python-lief
+                  python-msgpack
+                  python-pycryptodomex
+                  python-pure-magic-rs
+                  python-toml
+                  python-colorama
+                  python-pyperclip
+                  python-numpy
+                  ))
+    (native-inputs (list python-pytest python-setuptools))
+    (home-page "https://github.com/binref/refinery")
+    (synopsis "Binary data transformation and reverse engineering toolkit")
+    (description
+     "Refinery is a Python toolkit for binary data analysis and transformation.
+ It provides composable operations to decode, encode, decrypt, decompress,
+ and manipulate data streams, and can be used from the command line or as a
+ Python library.")
+    (license license:bsd-3)))
+
 ;; Uncomment to install with `guix package -f python-obsws-python'
 ;; python-libvirt
 ;; python-obsws-python
@@ -296,4 +335,5 @@ virtualization library.")
 ;; python-pefile-2024.8.26
 ;; python-aespython
 ;; python-libemu
+;; python-refinery
 ;; python-pure-magic-rs
