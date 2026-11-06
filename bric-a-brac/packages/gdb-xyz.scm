@@ -39,7 +39,7 @@
   #:export (gf))
 
 (define gf
-  (let ((commit "ab47ef8a3f21cd6383b4f26f6b121754d448aaef")
+  (let ((commit "1c04ed95d45d49fb4b06cbc620c61acd58818977")
         (revision "0"))
     (package
       (name "gf")
@@ -52,7 +52,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0vb0j8spq47zymzd24szgpng7alv8j9nli8rn3ibv5746zh5fvv3"))))
+                  "1z1awwzsxlh717kbxxd3x98f59igri58kgqgikh4as29fpc82sz3"))))
       (build-system gnu-build-system)
       (arguments
        (list #:tests? #f
