@@ -157,6 +157,7 @@ It enables the emulation of x86 shellcode under Python by leveraging libemu's en
                    (invoke (string-append #$python "/bin/python3")
                            "setup.py" "build" "--dynamic-link")))
                )))
+    (native-inputs (list python-setuptools))
     (inputs (list yara-4.5))
     (home-page "https://github.com/VirusTotal/yara-python")
     (synopsis "The Python interface for YARA")
