@@ -1,6 +1,6 @@
 ;;; engineering.scm
 
-;; Copyright (C) 2025 Free Software Foundation, Inc.
+;;Copyright (C) 2025 Free Software Foundation, Inc.
 
 ;; Author: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
 ;; Maintainer: Arnaud Lechevallier <arnaud.lechevallier@free.fr>
@@ -21,7 +21,7 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;; My best effort to release an up-to-date package definition for Radare2,
+;;; My best effort to release an up-to-date package definition for +-Radare-2-+,
 ;;; Rizin and Cutter
 ;;; With Wayland, you may need to install `qtwayland' in addition to `Cutter'
 
@@ -38,6 +38,9 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system qt)
+  #:use-module (guix build utils)
+  #:use-module (guix build emacs-build-system)
   #:use-module (gnu packages)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xdisorg)
@@ -57,29 +60,28 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages xml)
-  #:export (radare2-5.2)
-  #:export (radare2-5.9)
-  #:export (rizin-0.8)
-  #:export (cutter-2.4)
-  #:export (rzghidra))
-
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages crypto)
+  #:export (rizin-0.9)
+  #:export (cutter-2.5)
+  #:export (rzghidra-0.9))
 
 ;; RIZIN
 ;;
 
-(define rzghidra
+(define rzghidra-0.9
   (package
     (name "rzghidra")
-    (version "0.8.0")
+    (version "0.9.0")
     (source
      (origin (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/rizinorg/rz-ghidra.git")
-                   (commit (string-append "v" version))
-                   (recursive? #t)))
+                    (url "https://github.com/rizinorg/rz-ghidra.git")
+                    (commit (string-append "v" version))
+                    (recursive? #t)))
              (sha256
               (base32
-               "184yf5v30k6yvpb9kjbjzr1rrxc3acg8xqm0c3bjmfy0w6g093dq"))
+               "0zsy9cy9ll7ny8dsh690jkq68hgv2yax1nrmjlqax84nvnd0zp27"))
              (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -91,7 +93,7 @@
                    (string-append "-DRIZIN_INSTALL_PLUGDIR=" (string-append #$output "/lib/rizin/plugins"))
                    (string-append "-DCUTTER_INSTALL_PLUGDIR=" (string-append #$output "/share/rizin/cutter/plugins/native")))))
     (native-inputs
-     (list pkg-config rizin-0.8 openssl cutter-2.4))
+     (list pkg-config rizin-0.9 openssl cutter-2.5))
     (inputs (list
              qtsvg
              qttools
@@ -105,11 +107,11 @@
      "Ghidra decompiler for Rizin.")
     (license license:lgpl3)))
 
-(define rizin-0.8
+(define rizin-0.9
   (package
     (inherit rizin)
     (name "rizin")
-    (version "0.8.2")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -117,327 +119,113 @@
                     version "/rizin-src-v" version ".tar.xz"))
               (sha256
                (base32
-                "159ddi96mlqdynixy3h831dip59gr2gnj85jgvrjyvz8p99clc0n"))))
+                "1jixajg107lxhdqywvs97s0izz27yyqphm718akxvbx7miywvhbs"))))
+    (build-system meson-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments rizin)
        ((#:configure-flags original-flags)
-        #~(cons* "-Dportable=true" #$original-flags))
-       ((#:phases phases)
-        #~(modify-phases #$phases
-            (delete 'skip-integration-tests)
+        #~(cons* (string-append "-Dpackager_version=" #$version)
+                 "-Duse_sys_blake3=enabled"
+                 "-Ddebugger=true"
+                 "-Duse_sys_libzip_openssl=true"
+                 "-Dportable=true"      ;; hack to access plugin through GUIX_RZ_PLUGIN
+                 (filter (lambda (flag)
+                           (not (string-contains flag "-Dpackager_version=")
+                                ;; (or (member flag '("-Duse_swift_demangler=true"))
+                                ;;     (string-contains flag "-Dpackager_version="))
+                                ))
+                         #$original-flags)))
+       ((#:phases original-phases)
+        #~(modify-phases #$original-phases
+            (add-before 'check 'set-openssl-modules
+              (lambda* (#:key inputs #:allow-other-keys)
+                (setenv "OPENSSL_MODULES"
+                        (in-vicinity #$openssl "/lib/ossl-modules"))))
             (add-before 'configure 'skip-integration-tests
               (lambda _
                 ;; Skip integration tests, which require prebuilt binaries at:
                 ;; <https://github.com/rizinorg/rizin-testbins>.
                 (substitute* "test/meson.build"
                   (("subdir\\('integration'\\)") ""))
-                ;; Skip failing tests.
-                (substitute* "test/unit/meson.build"
-                  (("'tokens',\n") ""))
-                ;; Apply a fix similar to Nix's patch for managing plugins
+                ;; Patch to access plugins through GUIX_RZ_PLUGIN path
                 (substitute* "librz/util/path.c"
                   (("char \\*pid_to_path = rz_sys_pid_to_path\\(rz_sys_getpid\\(\\)\\);")
-                   "return rz_sys_getenv(\"GUIX_RZ_PREFIX\");\nchar *pid_to_path = rz_sys_pid_to_path(rz_sys_getpid());"))))))))
+                   "return rz_sys_getenv(\"GUIX_RZ_PREFIX\");\nchar *pid_to_path = rz_sys_pid_to_path(rz_sys_getpid());"))
+              ;;; Skip failing tests.
+                (substitute* "test/unit/meson.build"
+                  (("'hash',\n") ""))))
+            ))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUIX_RZ_PREFIX")
             (separator #f)
-            (files '("")))))))
+            (files '("" "plugin" "plugins")))))))
 
-(define cutter-2.4
+(define cutter-2.5
   (package
-    (inherit cutter)
     (name "cutter")
-    (version "2.4.1")
+    (version "2.5.0")                   ;keep in sync with rizin
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/rizinorg/cutter")
              (commit (string-append "v" version))
+             ;; Needed for src/translations.
              (recursive? #t)))
+       (modules '((guix build utils)))
+       (snippet #~(delete-file-recursively "rizin"))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "090gfg90k0fn3jiyssdigjgb7xn473hxfm7gpl1rwn3kl6fv7lvw"))))
+        (base32 "0qq2df831dqhhliydg6nr4qmfsig6yp78ahy8g7qlkkv1as5nxbn"))))
+    (build-system qt-build-system)
     (arguments
-     (list #:tests? #f
-           #:configure-flags
-           #~(list "-DCUTTER_USE_BUNDLED_RIZIN=OFF"
-                   "-DCUTTER_ENABLE_PYTHON=ON"
-                   "-DCUTTER_ENABLE_PYTHON_BINDINGS=ON")
-           #:phases
-           #~(modify-phases %standard-phases
-             (add-after 'unpack 'patch-location
-               (lambda _
-                   (substitute*
-                       "src/plugins/PluginManager.cpp"
-                     (("QString location = QStandardPaths::writableLocation\\(QStandardPaths::AppDataLocation\\);")
-                      (string-append "return QString::fromUtf8(std::getenv(\"GUIX_RZ_PREFIX\"))+\"/share/rizin/cutter/plugins/\";\n"
-                                     "QString location = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);"))))))))
-    (inputs
-     (modify-inputs (package-inputs cutter)
-       (replace "rizin" rizin-0.8) ;; use my definition package temporary
-       (replace "qtsvg" qtsvg)
-       (replace "qttools" qttools)
-       (append python qtbase qt5compat libxkbcommon python-pyside-6 ksyntaxhighlighting python-pyside-6 graphviz)))))
-
-;; RADARE2
-
-(define r2ghidra
-  (package
-   (name "r2ghidra")
-   (version "6.0.0")
-   (source (origin
-            (method git-fetch)
-            (uri (git-reference
-                  (url "https://github.com/radareorg/r2ghidra.git")
-                  (commit version)
-                  (recursive? #t)))
-            (sha256
-             (base32
-              "0kbzyd5jmxbcwv3zqzwakc46l17bpzlx2syh15hfi9vyncci9sms"))
-            (file-name (git-file-name name version))))
-   (build-system meson-build-system)
-   (arguments
-    (list #:phases
-          #~(modify-phases %standard-phases
-                           (add-before 'configure 'patch-meson-build
-                                       (lambda* (#:key inputs #:allow-other-keys)
-                                         (let* ((path "./subprojects")
-                                                (meson-build-file (string-append path "/packagefiles/ghidra-native/meson.build"))
-                                                (patches "./subprojects/ghidra-native"))
-                                           ;; (substitute* "configure.acr"
-                                           ;;   (("CHKPRG! GIT git") ""))
-                                           ;; (substitute* "meson.build"
-                                           ;;   (("pugixml_sources = \\[\n") "")
-                                           ;;   (("'third-party/pugixml/src/pugixml\\.cpp'\n") "#")
-                                           ;;   (("'third-party/pugixml/src/',\n") "")
-                                           ;;   (("pugixml_sources,\n") "")
-                                           ;;   (("ghidra = subproject\\('ghidra-native', default_options: \\['default_library=static', 'werror=false'\\]\\)") "ghidra = dependency('ghidra-native')"))
-                                           (substitute* "subprojects/Makefile"
-                                                        (("WRAP_wrap_git_url:=https://github.com/radareorg/ghidra-native\n") "")
-                                                        (("WRAP_wrap_git_revision:=d2242691bf45a12e3ea483a4789f825af4651506\n") ""))
-                                           (substitute* "subprojects/ghidra-native.mk"
-                                                        (("git clone --no-checkout --depth=1 https://github.com/radareorg/ghidra-native ghidra-native") "")
-                                                        (("cd ghidra-native && git fetch --depth=1 origin d2242691bf45a12e3ea483a4789f825af4651506") ""))
-                                           (substitute* "subprojects/ghidra-native.wrap"
-                                                        (("wrap-git") "wrap-file"))
-                                           ;; (delete-file "subprojects/ghidra-native.wrap")
-                                           ;; replace with the repository from inputs
-                                           (copy-recursively #$ghidra-native path)
-                                           (copy-file meson-build-file (string-append patches "/meson.build"))
-
-                                           (display "========8<======== PATCH ==============\n")
-                                           ;;(system* #$(file-append coreutils "/bin/ls") path)
-                                           (with-directory-excursion patches
-                                                                     (let ((patches
-                                                                            (list "patches/0001-space-after-comma.patch"
-                                                                                  "patches/0002-make-sleigharch-public.patch"
-                                                                                  "patches/0004-public-fields.patch"
-                                                                                  "patches/0006-readonly-warning.patch"
-                                                                                  "patches/0010-null-subflow.patch"
-                                                                                  "patches/0020-Fix-double-free-crash-when-deinitializing-multiple-X.patch"
-                                                                                  "patches/0023-Undef-LoadImage-for-windows.patch"
-                                                                                  "patches/0024-ignore-symbol-beyond-space.patch"
-                                                                                  "patches/0044-bad-unicode-codepoint.patch"
-                                                                                  "patches/0055-datatype-clone.patch"
-                                                                                  "patches/0056-nullderef-workaround.patch"
-                                                                                  "patches/0080-getparent-flow.patch"
-                                                                                  "patches/0090-nocasts-warnings.patch"
-                                                                                  "patches/0091-decompiler-xml-packer.patch"
-                                                                                  "patches/0092-badvar-segfault.patch"
-                                                                                  "patches/0093-no-virtual-destructor.patch")))
-                                                                       (map (lambda (p)
-                                                                              (invoke #$(file-append patch "/bin/patch") "-p1" "-i" p))
-                                                                            patches)))
-                                           (display "========8<======== DONE ==============\n")
-                                           ))))))
-   (native-inputs
-    (list pkg-config cmake zlib ghidra-native radare2 pugixml openssl))
-   (inputs
-    (list pugixml openssl radare2))
-   (home-page "https://radare.org/")
-   (synopsis "Reverse engineering decompiler")
-   (description
-    "Ghidra decompiler for Radare2.")
-   (license license:lgpl3)))
-
-(define radare2-5.2
-  (package
-    (name "radare2")
-    (version "5.2.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/radareorg/radare2")
-                    (commit version)))
-              (sha256
-               (base32
-                "0n3k190qjhdlj10fjqijx6ismz0g7fk28i83j0480cxdqgmmlbxc"))
-              (file-name (git-file-name name version))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f                      ; tests require git and network access
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'mklibdir
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
-             #t)))
-       #:configure-flags
-       (list "--with-openssl"
-             "--with-rpath"
-             "--with-syscapstone"
-             "--with-sysmagic"
-             "--with-syszip"
-             "--with-sysxxhash")
-       #:make-flags
-       (list "CC=gcc")))
-    ;; TODO: Add gmp and libzip and make the build system actually find them.
+     (list
+      #:qtbase qtbase
+      #:configure-flags
+      #~(list "-DCUTTER_USE_BUNDLED_RIZIN=OFF"
+              "-DCUTTER_ENABLE_PYTHON=ON"
+              "-DCUTTER_ENABLE_PYTHON_BINDINGS=ON")
+      #:tests? #f ; no tests
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-location
+            (lambda _
+              (substitute* "src/plugins/PluginManager.cpp"
+                (("const QString extraPluginDirs = CUTTER_EXTRA_PLUGIN_DIRS;")
+                 "const char *guixRzPrefix = std::getenv(\"GUIX_RZ_PREFIX\");\n\
+const QString extraPluginDirs = guixRzPrefix\n\
+    ? QDir(QString::fromUtf8(guixRzPrefix)).filePath(\"share/rizin/cutter/plugins\")\n\
+    : QStringLiteral(CUTTER_EXTRA_PLUGIN_DIRS);\n
+qDebug() << \"GUIX_RZ_PREFIX:\" << (guixRzPrefix ? guixRzPrefix : \"<not set>\");\n
+\n")))))))
     (native-inputs
-     (list pkg-config capstone libuv openssl libzip xxhash))
+     (list pkgconf))
     (inputs
-     (list capstone libuv zip))
-    (propagated-inputs
-     ;; In the Libs: section of r_hash.pc.
-     (list xxhash))
-    (home-page "https://radare.org/")
-    (synopsis "Reverse engineering framework")
+     (list graphviz
+           ksyntaxhighlighting
+           libzip
+           openssl
+           python
+           python-pyside-6
+           python-shiboken
+           qt5compat
+           qtsvg
+           qttools
+           qtwayland
+           rizin-0.9
+           zlib))
+    (home-page "https://cutter.re")
+    (synopsis "Software reverse engineering platform")
     (description
-     "Radare2 is a complete framework for reverse-engineering, debugging, and
-analyzing binaries.  It is composed of a set of small utilities that can be
-used together or independently from the command line.
-
-Radare2 is built around a scriptable disassembler and hexadecimal editor that
-support a variety of executable formats for different processors and operating
-systems, through multiple back ends for local and remote files and disk
-images.
-
-It can also compare (@dfn{diff}) binaries with graphs and extract information
-like relocation symbols.  It is able to deal with malformed binaries, making
-it suitable for security research and analysis.")
-    (license license:lgpl3)))
-
-(define r2-vector35-arch-arm64
-  (let ((commit "55d73c6bbb94448a5c615933179e73ac618cf876")
-        (revision "0"))
-    (package
-      (name "vector35-arch-arm64")
-      (version (git-version "0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/radareorg/vector35-arch-arm64.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1dfhnsin3gg9w805d050zhsb30jah6vfqcb1j2hck0s3kjkp3755"))))
-      (build-system trivial-build-system)
-      (arguments
-       (list #:builder
-             (with-imported-modules '((guix build utils))
-               #~(let ((share (string-append #$output "/arch-arm64/")))
-                   (use-modules (guix build utils))
-                   (mkdir-p share)
-                   (copy-recursively (assoc-ref %build-inputs "source")
-                                     share)))))
-      (home-page "https://github.com/radareorg/vector35-arch-arm64")
-      (synopsis "ARM64 architecture plugin for Binary Ninja")
-      (description "This package only provides the source checkout of vector35-arch-arm64.")
-      (license license:expat))))
-
-(define r2-vector35-arch-armv7
-  (let ((commit "f270a6cc99644cb8e76055b6fa632b25abd26024")
-        (revision "0"))
-    (package
-      (name "vector35-arch-armv7")
-      (version (git-version "0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/radareorg/vector35-arch-armv7.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0sdj311zc2zxrjwhjp91kdyb53fhwgn98p0xirvwxjiwncky05v2"))))
-      (build-system trivial-build-system)
-      (arguments
-       (list #:builder
-             (with-imported-modules
-                 '((guix build utils))
-               #~(let ((share (string-append #$output "/arch-armv7/")))
-                   (use-modules (guix build utils))
-                   (mkdir-p share)
-                   (copy-recursively (assoc-ref %build-inputs "source")
-                                     share)))))
-      (home-page "https://github.com/radareorg/vector35-arch-arm64")
-      (synopsis "ARM64 architecture plugin for Binary Ninja")
-      (description "This package only provides the source checkout of vector35-arch-arm64.")
-      (license license:expat))))
-
-(define radare2-5.9
-  (package
-    (inherit radare2-5.2)
-    (name "radare2")
-    (version "5.9.8")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/radareorg/radare2")
-                    (commit version)
-                    (recursive? #t)))
-              (sha256
-               (base32
-                "1l1vblj3n7gdw688xlibz0d7f0yhp45xbpzqa33magl44p9yyaax"))
-              (file-name (git-file-name name version))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments radare2-5.2)
-       ((#:configure-flags original-flags)
-        #~(cons* "--with-syscapstone"
-                 "--with-syslz4"
-                 "--with-syszip"
-                 "--with-compiler=gcc"
-                 #$original-flags))
-       ((#:phases original-phases)
-        #~(modify-phases #$original-phases
-            (add-before 'build 'arch-import
-              (lambda* (#:key inputs #:allow-other-keys)
-                (let* ((path "libr/arch/p/arm/v35/")
-                       (makefile (string-append path "Makefile")))
-                  ;; Remove reference to v35arm repositories
-                  (substitute* makefile
-                    (("git clone -q https://github.com/radareorg/vector35-arch-arm64 arch-arm64") "")
-                    (("cd arch-arm64 && git checkout -q radare2 > /dev/null && git reset --hard \\$\\(ARCH_ARM64_COMMIT\\)") "")
-                    (("git clone -q https://github.com/radareorg/vector35-arch-armv7 arch-armv7") "")
-                    (("cd arch-armv7 && git checkout -q radare2 > /dev/null && git reset --hard \\$\\(ARCH_ARMV7_COMMIT\\)") ""))
-                  ;; Replace with the repositories from inputs
-                  (copy-recursively #$r2-vector35-arch-arm64 path)
-                  (copy-recursively #$r2-vector35-arch-armv7 path))))
-            (add-after 'install 'fix-plugin-rpath
-              (lambda _
-                (use-modules (guix build utils))
-                (for-each (lambda (file)
-                            (invoke "patchelf"
-                                    "--add-rpath" (string-append %output "/lib")
-                                    file))
-                          (find-files (string-append %output
-                                                     "/lib/radare2/"
-                                                     #$version) "\\.so$"))
-                #t))))))
-    (native-inputs
-     (modify-inputs (package-native-inputs radare2-5.2)
-                    (append r2-vector35-arch-armv7 r2-vector35-arch-arm64
-                            patchelf)))
-    (inputs
-     (modify-inputs (package-inputs radare2-5.2)
-                    (append zlib libzip zip lz4 file)))))
+     "Cutter is a reverse engineering platform powered by @code{rizin}.  It
+aims to be an advanced and customizable reverse engineering platform while
+keeping the user experience in mind.  Cutter is created by reverse engineers
+for reverse engineers.")
+    (license (list license:cc-by-sa3.0 ;the "Iconic" icon set
+                   license:gpl3+))))
 
 ;; Uncomment to install with `guix package -f engineering.scm'
-;; radare2-5.2
-;; r2-vector35-arch-arm64
-;; r2-vector35-arch-armv7
-;; radare2-5.9
-;; rizin-0.8
-;; cutter-2.4
+;; cutter-2.5
+;; rizin-0.9
+;; rzghidra-0.9
