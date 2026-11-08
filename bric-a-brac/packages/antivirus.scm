@@ -38,6 +38,7 @@
   #:use-module (bric-a-brac packages engineering)
   #:use-module (bric-a-brac packages python-xyz)
   #:export (yara-4.5)
+  #:export (yara-4.6)
   #:export (cutter-hyara))
 
 (define cutter-hyara
@@ -104,6 +105,22 @@
        (sha256
         (base32 "16f8pkadyi6m8vp63hfs5634b6gix3ry9g5n7bkklx30ab2hpskb"))))))
 
+(define yara-4.6
+  (package
+    (inherit yara)
+    (name "yara")
+    (version "4.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://github.com/VirusTotal/yara")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02q6vll73g4qp2594d8k91hpvl4a8gm2pwrikwp93lzh9mv8kiqh"))))))
+
 ;; Uncomment to install with `guix package -f antivirus.scm'
 ;; yara-4.5
 ;; cutter-hyara
+;; yara-4.6
