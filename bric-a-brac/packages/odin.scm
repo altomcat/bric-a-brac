@@ -54,7 +54,8 @@
   #:export (odin-dev-2026-09)
   #:export (odin-dev-2026-10)
   #:export (ols)
-  #:export (ols-dev-2026-08))
+  #:export (ols-dev-2026-08)
+  #:export (ols-dev-2026-10))
 
 ;; Notes for myself:
 ;;
@@ -516,8 +517,46 @@ document symbols, formatting support, and other LSP features.")
             clang-toolchain-18
             odin-dev-2026-08)))))
 
+(define ols-dev-2026-10
+  (let* ((commit "c96dea912cf8272da7bb01a68696af5dfe1269ca")
+         (version "dev-2026-10")
+         (revision "0")
+         (ols-version (git-version version revision commit)))
+    (package
+      (inherit ols)
+      (name "ols-dev-2026-10")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/DanielGavin/ols")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "007kn73zf3knmcd8b2c4ffmi8d55icscshss2ba8pqldjs1ksn5m"))))
+      (arguments
+       (substitute-keyword-arguments
+           (package-arguments ols)
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (replace 'build
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (substitute* "build.sh"
+                    (("VERSION=\".*\"")
+                     (format #f "VERSION=~s" #$ols-version)))
+                  (display "Building ols ...\n")
+                  (invoke "./build.sh")
+                  (display "Building odin formatter ...\n")
+                  (invoke "./odinfmt.sh")))))))
+      (native-inputs
+       (list bash-minimal
+             llvm-18
+             clang-toolchain-18
+             odin-dev-2026-08))))) ;; failed with odin-dev-2026-10
 
-;; uncomment to install with `guix package -f odin'
+
+;; uncomment to install with `guix package -f odin.scm'
 ;; raylib-for-odin
 ;; raylib-for-odin+static
 ;; box2d-simd+static
@@ -525,6 +564,7 @@ document symbols, formatting support, and other LSP features.")
 ;; odin
 ;; ols
 ;; ols-dev-2026-08
+;; ols-dev-2026-10
 ;; odin-dev-2026-08
 ;; odin-dev-2026-09
 ;; odin-dev-2026-10
