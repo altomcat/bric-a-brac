@@ -101,9 +101,10 @@ It enables the emulation of x86 shellcode under Python by leveraging libemu's en
          (sha256
           (base32
            "02vf2l297g5pa5lqzj9f6svnrhdlg1sd1s9q1rmgh7lr1ad7mw1w"))))
-      (build-system python-build-system)
+      (build-system pyproject-build-system)
       (arguments
        (list #:tests? #f))
+      (native-inputs (list python-setuptools))
       (home-page "https://github.com/serprex/aespython")
       (synopsis "aespython is pure AES library for python3")
       (description
