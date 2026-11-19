@@ -17,7 +17,7 @@
   #:use-module (gnu packages tls)
   #:export (rust-script)
   #:export (pure-magic-rs)
-  )
+  #:export (shellharden))
 
 (define rust-script
   (package
@@ -85,5 +85,31 @@
 similar to libmagic. It supports MIME type inference and custom magic rules.")
     (license license:gpl3+)))
 
+(define shellharden
+  (package
+    (name "shellharden")
+    (version "4.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/anordal/shellharden.git")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0vzxissp5ymia41vaqp8f3p7czmv57nkq6jz67amb1n3fx2zf5b8"))))
+    (build-system cargo-build-system)
+    (synopsis "Harden shell scripts by correcting quoting issues")
+    (description
+     "Shellharden is a syntax highlighter and source rewriting tool for shell
+scripts.  It helps bring scripts toward ShellCheck conformance, with a
+particular focus on proper quoting.  It can highlight suggested changes or
+automatically transform scripts to reduce issues caused by unintended word
+splitting and glob expansion.")
+    (home-page "https://github.com/anordal/shellharden")
+    (license license:mpl2.0)))
+
 ;; Uncomment to install with `guix package -f rust-apps.scm'
 ;; pure-magic-rs
+;; shellharden
