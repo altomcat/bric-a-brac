@@ -52,8 +52,7 @@
   #:export (emacs-ace-window-next)
   #:export (emacs-svg-lib-0.2.8)
   #:export (emacs-kind-icon-0.2.2)
-  #:export (emacs-copilot-0.4)
-  #:export (emacs-copilot-master)
+  #:export (emacs-copilot-0.10)
   #:export (emacs-ob-glsl)
   #:export (emacs-ob-rust)
   #:export (emacs-compat+info)
@@ -135,11 +134,11 @@ in Emacs Org mode. It uses OpenGL 3.3 via SDL2 for rendering results.")
       (home-page "https://github.com/finalpatch/ob-glsl")
       (license license:expat))))
 
-(define emacs-copilot-0.4
-  (let ((commit "7904f13d52e8dcda3af67142c42fa7c8345ba6fe"))
+(define emacs-copilot-0.10
+  (let ((commit "56c043ae5078c4f8e13538c45f2a4227c9c1eb00"))
     (package
       (name "emacs-copilot")
-      (version "0.4.0")
+      (version "0.10.0")
       (source
        (origin
          (method git-fetch)
@@ -148,28 +147,13 @@ in Emacs Org mode. It uses OpenGL 3.3 via SDL2 for rendering results.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1v197qvi8m074ln005r74i7036imlcpm7nmxpzcvin87nfk0agrs"))))
+          (base32 "1k4skrjgy2h55lm077f3iibj0mss9649bn7x7xqwxxbd6f2jm524"))))
     (build-system emacs-build-system)
     (synopsis "Emacs copilot")
     (description "Emacs copilot")
     (home-page "https://github.com/copilot-emacs/copilot.el")
     (license license:expat))))
 
-(define emacs-copilot-master
-  (let ((commit "59a4a292236ac9bea8756c0a0613b750b14d91eb"))
-    (package
-     (inherit emacs-copilot-0.4)
-     (name "emacs-copilot")
-     (version "master")
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/copilot-emacs/copilot.el")
-             (commit commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0dhsc7yiqmspka6yjzp32z6ah5y575r6ybddbvqfldbxsp2cdz33")))))))
 
 (define emacs-svg-lib-0.2.8
   (let ((commit "710803c3bea1a25d6d47475c6e1eee734e7144ae"))
@@ -473,8 +457,7 @@ graph.  (Optional dependencies GraphViz, D3js, to be acquired separately!)
 ;; emacs-svg-lib-0.2.8
 ;; emacs-kind-icon-0.2.2
 ;; emacs-ob-glsl
-;; emacs-copilot-master
-;; emacs-copilot-0.4
+;; emacs-copilot-0.10
 ;; emacs-compat+info
 ;; emacs-denote-explore-fix
 ;; emacs-ob-rust
