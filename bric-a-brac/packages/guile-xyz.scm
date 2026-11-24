@@ -41,7 +41,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages game-development)
+  #:use-module (bric-a-brac packages game-development)
   #:export (guile-pstk)
   #:export (guile-raylib))
 
@@ -86,7 +86,7 @@
       (native-inputs (list pkg-config glfw-3.4 wayland))
       (inputs (list guile-3.0
                     guile-lib))
-      (propagated-inputs (list raylib))
+      (propagated-inputs (list raylib-6))
       (outputs '("out" "examples"))
       (arguments
        `(#:make-flags '("GUILE_AUTO_COMPILE=0")
@@ -102,15 +102,23 @@
            (delete 'configure)
            (delete 'strip) ;; remove useless warning with go files.
            (delete 'install)
+
            (add-before 'build 'retrieve-raylib-api
              (lambda* (#:key inputs #:allow-other-keys)
 	       (let ((raylib-version (last (string-split (assoc-ref inputs "raylib")
                                                          #\-)))
-                     (raylib-xml (string-append
-                                  (assoc-ref inputs "raylib")
-                                  "/share/raylib/raylib_api.xml")))
+                     (raylib-xml (in-vicinity (assoc-ref inputs "raylib")
+                                              "/share/raylib/raylib_api.xml")))
                  (copy-file raylib-xml "raylib_api.xml")
-                 #t)))
+                 (invoke "ls" "-la")
+                 ;; fix xml api
+                 (substitute* "raylib_api.xml"
+                              (("\"\\*\\.\\*\", \"FILES\\*\", \"DIRS\\*\"")
+                               "&quot;*.*&quot;, &quot;FILES*&quot;, &quot;DIRS*&quot;"))
+                 ;; fix the bindings generator
+                 (substitute* "generate-bindings.scm"
+                              (("\\s+\"ModelAnimation\"")
+                               "\n    \"ModelAnimation\"\n    \"ModelSkeleton\"")))))
 
            (add-after 'unpack 'fix-makefile
              (lambda _
